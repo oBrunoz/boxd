@@ -5,6 +5,8 @@ import movieRoutes from "./routes/movieRoutes";
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "../public")))
+
 app.use('/api/movies', movieRoutes);
 
 app.get("/", (req, res) => {
