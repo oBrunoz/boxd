@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boxd - Seu catálogo de filmes</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="font-sans text-white">
+    <!-- NAV -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b px-6 py-4 flex items-center justify-between">
+        <button class="focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        
+        <div class="text-2xl font-bold"><a href="/">Boxd</a></div>
+        
+        <button class="focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Hero com vídeo em background e informações do filme -->
+    <section class="relative h-screen overflow-hidden">
+        <!-- Vídeo de fundo -->
+        <div class="absolute inset-0 w-full h-full">
+            <div class="absolute inset-0 bg-black bg-opacity-60 z-10"></div>
+            <video class="absolute object-cover w-full h-full" autoplay loop muted>
+                <source src="/api/placeholder/1920/1080" type="video/mp4">
+                <!-- Fallback para navegadores que não suportam vídeo -->
+                <div class="absolute inset-0 bg-gray-900"></div>
+            </video>
+        </div>
+
+        <!-- Conteúdo do filme em destaque -->
+        <div class="container mx-auto px-6 relative z-20 h-full flex items-center">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div>
+                        <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm">Em destaque</span>
+                        <h1 id="movie-title" class="text-5xl md:text-6xl font-bold mt-4 leading-tight"></h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-star text-yellow-500 mr-1"></i>
+                            <span id="movie-rating"></span>
+                        </span>
+                        <span class="text-gray-300">|</span>
+                        <span id="movie-year"></span>
+                        <span class="text-gray-300">|</span>
+                        <span id="movie-duration"></span>
+                        <span class="text-gray-300">|</span>
+                        <span id="movie-genre"></span>
+                    </div>
+                    <p id="movie-description" class="text-gray-300 text-lg max-w-lg"></p>
+                    <div class="flex space-x-4">
+                        <a id="movie-trailer" href="#" class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 flex items-center">
+                            <i class="fas fa-play mr-2"></i> Assistir trailer
+                        </a>
+                        <a href="#" class="px-6 py-3 bg-gray-800 bg-opacity-80 text-white rounded-full hover:bg-gray-700 transition duration-300 flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Adicionar à lista
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <img id="movie-poster" src="" alt="Filme em Destaque" class="rounded-lg shadow-2xl transform hover:scale-105 transition duration-500 mx-auto max-h-96">
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- Botão para rolar para baixo -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+            <a href="#content" class="flex flex-col items-center text-white hover:text-red-500 transition duration-300">
+                <span class="mb-2">Explorar mais</span>
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Conteúdo abaixo do hero -->
+    <main id="content" class="bg-gray-900 py-16">
+        <!-- Seção de filmes em alta -->
+        <section class="container mx-auto px-6 mb-16">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Em alta esta semana</h2>
+                <a href="/filmes/populares" class="text-red-500 hover:text-red-600 flex items-center">
+                    Ver todos <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <!-- Espaços para os filmes que serão carregados dinamicamente -->
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <div class="aspect-w-2 aspect-h-3 bg-gray-700 animate-pulse"></div>
+                    <div class="p-4">
+                        <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
+                        <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <div class="aspect-w-2 aspect-h-3 bg-gray-700 animate-pulse"></div>
+                    <div class="p-4">
+                        <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
+                        <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <div class="aspect-w-2 aspect-h-3 bg-gray-700 animate-pulse"></div>
+                    <div class="p-4">
+                        <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
+                        <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <div class="aspect-w-2 aspect-h-3 bg-gray-700 animate-pulse"></div>
+                    <div class="p-4">
+                        <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
+                        <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+                    </div>
+                </div>
+                <div class="hidden lg:block bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <div class="aspect-w-2 aspect-h-3 bg-gray-700 animate-pulse"></div>
+                    <div class="p-4">
+                        <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
+                        <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de recursos/features -->
+        <section class="bg-gray-800 py-16">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold mb-12 text-center">Por que usar o Boxd?</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-gray-900 p-8 rounded-xl text-center">
+                        <div class="bg-red-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-film text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Acompanhe filmes</h3>
+                        <p class="text-gray-400">Mantenha um registro de todos os filmes que você assistiu e quer assistir. Nunca mais perca suas recomendações.</p>
+                    </div>
+                    <div class="bg-gray-900 p-8 rounded-xl text-center">
+                        <div class="bg-red-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-star text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Avalie e critique</h3>
+                        <p class="text-gray-400">Compartilhe suas opiniões sobre filmes e leia avaliações de outros usuários para descobrir novas obras.</p>
+                    </div>
+                    <div class="bg-gray-900 p-8 rounded-xl text-center">
+                        <div class="bg-red-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-list text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Crie listas</h3>
+                        <p class="text-gray-400">Organize seus filmes em listas personalizadas e compartilhe com amigos. Crie coleções temáticas e muito mais.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- <script defer src="js/main.js"></script> -->
+     <script>
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        fetchTrendingMovies();
+    }, 1500);
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+})
+
+async function fetchTrendingMovies() {
+    const response = await fetch("/api/movies/popular");
+    const data = await response.json();
+
+    // Pega o primeiro filme da lista
+    const movie = data.results[0];
+
+    if (!movie) return;
+
+    // Atualiza o conteúdo da página com os dados do filme
+    document.getElementById("movie-title").textContent = movie.title;
+    document.getElementById("movie-rating").textContent = movie.vote_average.toFixed(1);
+    document.getElementById("movie-year").textContent = new Date(movie.release_date).getFullYear();
+    document.getElementById("movie-duration").textContent = `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}min`;
+    
+    // Pegando o primeiro gênero da lista
+    document.getElementById("movie-genre").textContent = movie.genre_ids.length > 0 ? await getGenreName(movie.genre_ids[0]) : "Desconhecido";
+    
+    document.getElementById("movie-description").textContent = movie.overview;
+    document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+    
+    // Link para o trailer (precisa buscar os vídeos do filme)
+    const trailerUrl = await getTrailerUrl(movie.id);
+    document.getElementById("movie-trailer").href = trailerUrl;
+}
+
+// Função para obter o nome do gênero baseado no ID
+async function getGenreName(genreId) {
+    const genreResponse = await fetch("/api/movies/genres");
+    const genreData = await genreResponse.json();
+
+    const genre = genreData.genres.find(g => g.id === genreId);
+    return genre ? genre.name : "Desconhecido";
+}
+
+// Função para obter a URL do trailer do filme
+async function getTrailerUrl(movieId) {
+    const response = await fetch(`/api/movies/${movieId}/videos`);
+    const data = await response.json();
+    
+    const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
+    return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : "#";
+}
+     </script>
+</body>
+</html>
