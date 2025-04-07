@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx nodemon",
-    "style": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --watch"
+    "style": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/tailwind.css --watch"
   },
   "author": "",
   "license": "ISC",
@@ -19,10 +19,10 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.1",
+    "@tailwindcss/cli": "^4.1.3",
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "tailwindcss": "^4.1.1"
+    "tailwindcss": "^4.1.3"
   }
 }
