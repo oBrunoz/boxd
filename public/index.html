@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boxd - Seu catálogo de filmes</title>
-    <!-- Tailwind CSS via CDN -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/input.css">
+    <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body class="font-sans text-white">
     <!-- NAV -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b px-6 py-4 flex items-center justify-between">
-        <button class="focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <label class="hamburger">
+            <input type="checkbox">
+            <svg viewBox="0 0 32 32">
+              <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+              <path class="line" d="M7 16 27 16"></path>
             </svg>
-        </button>
+        </label>
         
         <div class="text-2xl font-bold"><a href="/">Boxd</a></div>
         
@@ -165,67 +167,6 @@
         </section>
     </main>
 
-    <!-- <script defer src="js/main.js"></script> -->
-     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        fetchTrendingMovies();
-    }, 1500);
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-})
-
-async function fetchTrendingMovies() {
-    const response = await fetch("/api/movies/popular");
-    const data = await response.json();
-
-    // Pega o primeiro filme da lista
-    const movie = data.results[0];
-
-    if (!movie) return;
-
-    // Atualiza o conteúdo da página com os dados do filme
-    document.getElementById("movie-title").textContent = movie.title;
-    document.getElementById("movie-rating").textContent = movie.vote_average.toFixed(1);
-    document.getElementById("movie-year").textContent = new Date(movie.release_date).getFullYear();
-    document.getElementById("movie-duration").textContent = `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}min`;
-    
-    // Pegando o primeiro gênero da lista
-    document.getElementById("movie-genre").textContent = movie.genre_ids.length > 0 ? await getGenreName(movie.genre_ids[0]) : "Desconhecido";
-    
-    document.getElementById("movie-description").textContent = movie.overview;
-    document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-    
-    // Link para o trailer (precisa buscar os vídeos do filme)
-    const trailerUrl = await getTrailerUrl(movie.id);
-    document.getElementById("movie-trailer").href = trailerUrl;
-}
-
-// Função para obter o nome do gênero baseado no ID
-async function getGenreName(genreId) {
-    const genreResponse = await fetch("/api/movies/genres");
-    const genreData = await genreResponse.json();
-
-    const genre = genreData.genres.find(g => g.id === genreId);
-    return genre ? genre.name : "Desconhecido";
-}
-
-// Função para obter a URL do trailer do filme
-async function getTrailerUrl(movieId) {
-    const response = await fetch(`/api/movies/${movieId}/videos`);
-    const data = await response.json();
-    
-    const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
-    return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : "#";
-}
-     </script>
+    <script defer src="js/main.js"></script>
 </body>
 </html>
