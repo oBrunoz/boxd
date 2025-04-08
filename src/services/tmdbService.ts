@@ -11,7 +11,8 @@ export const getTMDBData = async (endpoint: string, params: TMDBParams = {}) => 
         const response = await axios.get(`${BASE_URL}${endpoint}`, {
             params: {
                 api_key: env.TMDB_API_KEY,
-                language: 'pt-BR'
+                language: 'pt-BR',
+                ...params,
             }
         })
 
