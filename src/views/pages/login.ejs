@@ -1,0 +1,95 @@
+<%- contentFor('body') %>
+
+<div class="relative min-h-screen flex flex-col">
+  <!-- Imagem de fundo -->
+  <div class="absolute inset-0 w-full h-full">
+    <div class="absolute inset-0 bg-black opacity-80 z-10"></div>
+    <img src="https://image.tmdb.org/t/p/original/rr7E0NoGKxvbkb89eR1GwfoYjpA.jpg" alt="Background" class="absolute object-cover w-full h-full">
+  </div>
+
+  <!-- Container do login -->
+  <div class="container mx-auto px-4 sm:px-6 relative z-20 flex-grow flex items-center justify-center py-16 sm:py-20">
+    <div class="bg-gray-900/90 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md">
+      <!-- Cabeçalho -->
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-white">Entrar no Boxd</h1>
+        <p class="text-sm text-gray-400 mt-2">Acompanhe e avalie seus filmes favoritos</p>
+      </div>
+
+      <!-- Formulário -->
+      <form class="space-y-5">
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm text-gray-300 mb-2">E-mail</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-envelope text-gray-500 text-sm"></i>
+            </div>
+            <input type="email" id="email" class="bg-gray-800 text-white placeholder-gray-500 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full" placeholder="voce@email.com" required>
+          </div>
+        </div>
+
+        <!-- Senha -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label for="password" class="text-sm text-gray-300">Senha</label>
+          </div>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-lock text-gray-500 text-sm"></i>
+            </div>
+            <input type="password" id="password" class="bg-gray-800 text-white placeholder-gray-500 pl-10 pr-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full" placeholder="••••••••" required>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                <button type="button" class="text-gray-500 hover:text-gray-300 focus:outline-none" id="toggle-password">
+                    <i class="fas fa-eye text-sm"></i>
+                </button>
+            </div>
+        </div>
+        <a href="/recuperar-senha" class="text-xs text-red-500 hover:text-red-400">Esqueceu a senha?</a>
+        </div>  
+
+        <!-- Lembrar
+        <div class="flex items-center">
+          <input type="checkbox" id="remember" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-700 rounded">
+          <label for="remember" class="ml-2 text-sm text-gray-300">Lembrar de mim</label>
+        </div> -->
+
+        <!-- Botão principal -->
+        <button type="submit" class="w-full cursor-pointer bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition duration-300 text-base font-semibold">
+          Entrar
+        </button>
+      </form>
+
+      <!-- Separador -->
+      <div class="mt-8">
+        <div class="relative mb-4">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-700"></div>
+          </div>
+          <div class="relative flex justify-center text-gray-500 text-sm">
+            <span class="bg-gray-900 px-4">ou continue com</span>
+          </div>
+        </div>
+
+        <!-- Login com redes sociais -->
+        <div class="grid grid-cols-3 gap-3">
+          <button type="button" class="py-3 px-4 cursor-pointer bg-[#DB4437] hover:bg-[#c23321] rounded-lg flex items-center justify-center transition duration-300">
+            <i class="fab fa-google text-white text-base"></i>
+          </button>
+          <button type="button" class="py-3 px-4 cursor-pointer bg-[#4267B2] hover:bg-[#365899] rounded-lg flex items-center justify-center transition duration-300">
+            <i class="fab fa-facebook-f text-white text-base"></i>
+          </button>
+          <button type="button" class="py-3 px-4 cursor-pointer bg-[#1DA1F2] hover:bg-[#0d8ddb] rounded-lg flex items-center justify-center transition duration-300">
+            <i class="fab fa-twitter text-white text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Rodapé -->
+      <p class="text-center mt-8 text-sm text-gray-400">
+        Ainda não tem uma conta?
+        <a href="<%= urls['registerUrl'] %>" class="text-red-500 hover:text-red-400 font-medium">Crie uma agora</a>
+      </p>
+    </div>
+  </div>
+</div>

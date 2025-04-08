@@ -1,33 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boxd - Seu catálogo de filmes</title>
-    <link rel="stylesheet" href="css/input.css">
-    <link rel="stylesheet" href="css/tailwind.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-</head>
-<body class="font-sans text-white">
-    <!-- NAV -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b px-6 py-4 flex items-center justify-between">
-        <label class="hamburger">
-            <input type="checkbox">
-            <svg viewBox="0 0 32 32">
-              <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-              <path class="line" d="M7 16 27 16"></path>
-            </svg>
-        </label>
-        
-        <div class="text-2xl font-bold"><a href="/">Boxd</a></div>
-        
-        <button class="focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-        </button>
-    </nav>
-
+    <%- contentFor('body') %>
+    
     <!-- Hero com vídeo em background e informações do filme -->
     <section class="relative h-screen overflow-hidden">
         <!-- Vídeo de fundo -->
@@ -167,7 +139,3 @@
             </div>
         </section>
     </main>
-
-    <script defer src="js/main.js"></script>
-</body>
-</html>
