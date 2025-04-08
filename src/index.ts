@@ -9,6 +9,8 @@ const urls = {
     homeUrl: "/",
     moviesUrl: "/movies",
     seriesUrl: "/series",
+    loginUrl: "/login",
+    registerUrl: "/register",
 }
 
 // Middleware global para passar urls em todas as views
@@ -39,6 +41,14 @@ app.get("/movies", (req, res) => {
 
 app.get("/series", (req, res) => {
     res.render("pages/tv_show");
+})
+
+app.get("/login", (req, res) => {
+    res.render("pages/login");
+})
+
+app.get("/register", (req, res) => {
+    res.render("pages/signup");
 })
 
 app.listen(env.PORT, () => {
