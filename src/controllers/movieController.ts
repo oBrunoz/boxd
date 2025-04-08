@@ -33,20 +33,20 @@ export const getMovieDetails = async (
   }
 };
 
-export const searchMovies = async (
+export const searchMulti = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<any> => {
   try {
-    const query = req.query.q;
+    const query = String(req.query.q || '').trim();
     const page = req.query.page ? Number(req.query.page) : 1;
     
     if (!query) {
       return res.status(400).json({ message: 'O parâmetro de busca é obrigatório' });
     }
     
-    const data = await getTMDBData('/search/movie', { query, page });
+    const data = await getTMDBData('/search/multi', { query, page });
     
     res.json(data);
   } catch (error) {
