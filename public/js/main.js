@@ -20,14 +20,18 @@ async function fetchTrendingMovies() {
 
     // Pega o primeiro filme da lista
     const movie = data.results[0];
-
+    console.log(movie)
     if (!movie) return;
 
     // Atualiza o conteúdo da página com os dados do filme
     document.getElementById("movie-title").textContent = movie.title;
     document.getElementById("movie-rating").textContent = movie.vote_average.toFixed(1);
     document.getElementById("movie-year").textContent = new Date(movie.release_date).getFullYear();
-    document.getElementById("movie-duration").textContent = `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}min`;
+
+    fetch(`/api/movies/${movie.id}`).then(data => data.json()).then(({runtime}) => 
+        document.querySelector("#movie-duration").textContent = `${Math.floor(runtime / 60)}h ${runtime % 60}min`
+    ) 
+    document.querySelector('.sinopse').textContent = movie.overview
     
     // Pegando o primeiro gênero da lista
     document.getElementById("movie-genre").textContent = movie.genre_ids.length > 0 ? await getGenreName(movie.genre_ids[0]) : "Desconhecido";
@@ -48,6 +52,7 @@ async function getGenreName(genreId) {
     const genre = genreData.genres.find(g => g.id === genreId);
     return genre ? genre.name : "Desconhecido";
 }
+
 
 // Função para obter a URL do trailer do filme
 async function getTrailerUrl(movieId) {
