@@ -61,7 +61,7 @@ export const searchMovies = async (
       return res.status(400).json({ message: 'O parâmetro de busca é obrigatório' });
     }
     
-    const data = await getTMDBData('/search/movie', { query, page });
+    const data = await getTMDBData('/search/multi', { query, page });
     
     res.json(data);
   } catch (error) {

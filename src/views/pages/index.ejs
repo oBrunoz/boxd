@@ -13,6 +13,46 @@
 
         <!-- Conteúdo do filme em destaque -->
         <div class="container mx-auto px-6 relative z-20 h-full flex items-center">
+            <div id="movie-skeleton" class="grid md:grid-cols-2 gap-12 items-center animate-pulse">
+                <!-- Coluna esquerda - Informações do filme -->
+                <div class="space-y-6">
+                    <div>
+                        <div class="bg-gray-700 w-32 h-7 rounded-full"></div>
+                        <div class="bg-gray-700 h-14 mt-4 w-4/5 rounded"></div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <div class="bg-gray-700 w-5 h-5 mr-1 rounded-full"></div>
+                            <div class="bg-gray-700 w-14 h-5 rounded"></div>
+                        </div>
+                        <span class="text-gray-700">|</span>
+                        <div class="bg-gray-700 w-16 h-5 rounded"></div>
+                        <span class="text-gray-700">|</span>
+                        <div class="bg-gray-700 w-20 h-5 rounded"></div>
+                        <span class="text-gray-700">|</span>
+                        <div class="bg-gray-700 w-28 h-5 rounded"></div>
+                    </div>
+                    <!-- Gêneros -->
+                    <div class="flex flex-wrap gap-2 my-3">
+                        <div class="bg-gray-700 w-16 h-6 rounded-full"></div>
+                        <div class="bg-gray-700 w-20 h-6 rounded-full"></div>
+                        <div class="bg-gray-700 w-24 h-6 rounded-full"></div>
+                    </div>
+                    <!-- Sinopse -->
+                    <div class="space-y-2">
+                        <div class="bg-gray-700 h-4 w-full rounded"></div>
+                        <div class="bg-gray-700 h-4 w-full rounded"></div>
+                        <div class="bg-gray-700 h-4 w-11/12 rounded"></div>
+                        <div class="bg-gray-700 h-4 w-4/5 rounded"></div>
+                    </div>
+                    <!-- Botões -->
+                    <div class="flex space-x-4">
+                        <div class="bg-gray-700 w-40 h-12 rounded-full"></div>
+                        <div class="bg-gray-700 w-44 h-12 rounded-full"></div>
+                    </div>
+                </div>
+            </div>              
+            <div id="movie-content" class="hidden">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="space-y-6">
                     <div>
@@ -29,10 +69,10 @@
                         <span class="text-gray-300">|</span>
                         <span id="movie-duration"></span>
                         <span class="text-gray-300">|</span>
-                        <span id="movie-genre"></span>
+                        <span id="movie-tagline"></span>
                     </div>
+                    <div id="movie-genres" class="flex flex-wrap gap-2 my-3"></div>
                     <div class="sinopse text-justify"></div>
-                    <p id="movie-description" class="text-gray-300 text-lg max-w-lg"></p>
                     <div class="flex space-x-4">
                         <a id="movie-trailer" href="#" class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 flex items-center">
                             <i class="fas fa-play mr-2"></i> Assistir trailer
@@ -45,6 +85,7 @@
                 <div class="hidden md:block">
                     <img id="movie-poster" src="" alt="Filme em Destaque" class="rounded-lg shadow-2xl transform hover:scale-105 transition duration-500 mx-auto max-h-96">
                 </div>
+            </div>
             </div>
         </div>
         

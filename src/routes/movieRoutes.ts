@@ -8,6 +8,6 @@ router.get("/:id/images", getMovieImages)
 // router.get("/search", searchMovies);
 router.get("/:id", getMovieDetails);
 router.get("/:id/videos", getMovieVideos);
-router.get("/genres", getGenres);
+router.get("/:id", getMovieDetails);
 
 export default router;
