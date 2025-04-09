@@ -147,7 +147,7 @@ function renderSearchResults(results) {
             const type = item.media_type === "movie" ? "🎬 Filme" :
             item.media_type === "tv" ? "📺 Série" :
                      item.media_type === "person" ? "👤 Pessoa" : "🎲 Outro";
-            const year = item.first_air_date ? new Date(item.first_air_date).getFullYear() : "";
+            const year = item.release_date ? new Date(item.release_date).getFullYear() : item.first_air_date ? new Date(item.first_air_date).getFullYear() : "";
     
             const imagePath = item.poster_path || item.profile_path || item.backdrop_path;
             const imageUrl = imagePath 
@@ -187,12 +187,7 @@ async function updateMain() {
     const response = await fetch("/api/movies/popular");
     const data = await response.json();
 
-//     for(i=0; i<=10; i++){
-//     setTimeout(() => {
-        
-//     }, "30000")
-// }
-    const movie = data.results[0];
+    const movie = data.results[1];
     if (!movie) return;
 
     // Atualiza os elementos principais
