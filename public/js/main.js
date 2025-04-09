@@ -12,17 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-
-    // Alternar visibilidade da senha
-    const togglePassword = document.getElementById('toggle-password');
-    const password = document.getElementById('password');
-
-    togglePassword.addEventListener('click', function() {
-        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-        password.setAttribute('type', type);
-        this.querySelector('i').classList.toggle('fa-eye');
-        this.querySelector('i').classList.toggle('fa-eye-slash');
-});
 })
 
 async function fetchTrendingMovies() {
@@ -31,18 +20,23 @@ async function fetchTrendingMovies() {
 
     // Pega o primeiro filme da lista
     const movie = data.results[0];
-    console.log(movie)
+
     if (!movie) return;
 
     // Atualiza o conteúdo da página com os dados do filme
     document.getElementById("movie-title").textContent = movie.title;
     document.getElementById("movie-rating").textContent = movie.vote_average.toFixed(1);
     document.getElementById("movie-year").textContent = new Date(movie.release_date).getFullYear();
+    document.querySelector('.sinopse').textContent = movie.overview
 
     fetch(`/api/movies/${movie.id}`).then(data => data.json()).then(({runtime}) => 
         document.querySelector("#movie-duration").textContent = `${Math.floor(runtime / 60)}h ${runtime % 60}min`
     ) 
-    document.querySelector('.sinopse').textContent = movie.overview
+
+    const img_path = await getImage(movie.id);
+    document.querySelector('#background-img').src = `https://image.tmdb.org/t/p/original${img_path}`
+    console.log(img_path)
+
     
     // Pegando o primeiro gênero da lista
     document.getElementById("movie-genre").textContent = movie.genre_ids.length > 0 ? await getGenreName(movie.genre_ids[0]) : "Desconhecido";
@@ -72,4 +66,17 @@ async function getTrailerUrl(movieId) {
     
     const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
     return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : "#";
+}
+
+//pegar as imagens
+async function getImage(movieId) {
+    const response = await fetch(`/api/movies/${movieId}/images`);
+    const data = await response.json()
+
+    console.log(data)
+
+    // const img_path = data.backdrops[0].file_path;
+
+    // return img_path
+
 }

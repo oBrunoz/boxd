@@ -33,6 +33,21 @@ export const getMovieDetails = async (
   }
 };
 
+export const getMovieImages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const data = await getTMDBData(`/movie/${id}/images`);
+    res.json(data);
+
+  }catch(error) {
+    next(error);
+  }
+}
+
 export const searchMovies = async (
   req: Request,
   res: Response,
