@@ -162,28 +162,39 @@ function renderSearchResults(results) {
     }
 
     results.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "flex items-center gap-3 p-3 hover:bg-zinc-800 transition rounded cursor-pointer";
+        console.log(item)
+        const card = document.createElement("a");
+        card.className = "flex items-center gap-3 p-3 hover:bg-zinc-800 transition-colors duration-200 rounded cursor-pointer";
+        card.href = `/${item.media_type === 'movie' ? 'movies' : item.media_type === 'tv' ? 'series' : 'people'}/${item.id}`;
+    
+        const title = item.title || item.name || item.original_name || item.original_title;
 
-        const title = item.title || item.name || "Sem título";
-        const type = item.media_type === "movie" ? "🎬 Filme" :
-                     item.media_type === "tv" ? "📺 Série" :
+        if (title) {
+            const type = item.media_type === "movie" ? "🎬 Filme" :
+            item.media_type === "tv" ? "📺 Série" :
                      item.media_type === "person" ? "👤 Pessoa" : "🎲 Outro";
-
-        const imagePath = item.poster_path || item.profile_path;
-        const imageUrl = imagePath ? `https://image.tmdb.org/t/p/w92${imagePath}` : "https://via.placeholder.com/92x138?text=N/A";
-
-        card.innerHTML = `
-            <img src="${imageUrl}" alt="${title}" class="w-12 h-16 object-cover rounded" />
-            <div>
-                <h3 class="text-sm font-medium">${title}</h3>
-                <p class="text-xs text-zinc-400">${type}</p>
-            </div>
-        `;
-
-        container.appendChild(card);
+            const year = item.first_air_date ? new Date(item.first_air_date).getFullYear() : "";
+    
+            const imagePath = item.poster_path || item.profile_path || item.backdrop_path;
+            const imageUrl = imagePath 
+                ? `https://image.tmdb.org/t/p/w92${imagePath}` 
+                : "images/image_not_found.png";
+        
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="Imagem de ${title}" class="w-12 h-16 object-cover rounded bg-zinc-800" />
+                <div class="flex flex-col">
+                    <div class="flex flex-row gap-3">
+                        <h3 class="text-sm font-medium line-clamp-1">${title}</h3>
+                        <h3 class="text-sm font-light line-clamp-1 text-gray-400">${year}</h3>
+                    </div>
+                    <p class="text-xs text-zinc-400">${type}</p>
+                </div>
+                `;
+                
+            container.appendChild(card);
+        }
     });
-
+        
     showSearchResults(container);
 }
 
