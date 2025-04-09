@@ -79,8 +79,21 @@
             </svg>
           </label>
         
+          <template id="search-result-template">
+            <a class="flex items-center gap-3 p-3 hover:bg-zinc-800 transition-colors duration-200 rounded cursor-pointer">
+              <img src="" alt="" class="w-12 h-16 object-cover rounded bg-zinc-800" />
+              <div class="flex flex-col">
+                <div class="flex flex-row gap-3">
+                  <h3 class="text-sm font-medium line-clamp-1 title"></h3>
+                  <h3 class="text-sm font-light line-clamp-1 text-gray-400 year"></h3>
+                </div>
+                <p class="text-xs text-zinc-400 type"></p>
+              </div>
+            </a>
+          </template>
+
           <div id="search-results" class="absolute top-12 right-0 mt-2 max-h-[400px] w-80 overflow-y-auto z-40 bg-[#191A1E] shadow-lg rounded-lg text-white border border-zinc-700 transform scale-y-0 opacity-0 transition-all duration-300 origin-top pointer-events-none">
-            <!-- os resultados serão inseridos aqui via JS -->
+            <!-- Resultados -->
           </div>
         </div>
     </nav>
