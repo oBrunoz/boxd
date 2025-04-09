@@ -1,5 +1,4 @@
 let debounceTimeout;
-
 document.addEventListener('DOMContentLoaded', () => {
     const togglePassword = document.getElementById('toggle-password');
     const password = document.getElementById('password');
@@ -72,35 +71,10 @@ async function getTrendingMovies() {
     content.classList.add("hidden");
 
     try {
-      const response = await fetch("/api/movies/popular");
-      const data = await response.json();
-  
-      const movie = data.results[0];
-      if (!movie) return;
-  
-      // Atualiza os elementos principais
-      document.getElementById("movie-title").textContent = movie.title;
-      document.getElementById("movie-rating").textContent = movie.vote_average.toFixed(1);
-      document.getElementById("movie-year").textContent = new Date(movie.release_date).getFullYear();
-      document.querySelector('.sinopse').textContent = movie.overview;
-      // document.getElementById("movie-poster").src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-  
-      // Detalhes adicionais (runtime e tagline)
+        const movie = await updateMain()
       try {
-        const detailRes = await fetch(`/api/movies/${movie.id}`);
-        const { runtime, tagline, genres } = await detailRes.json();
-        const genresContainer = document.getElementById("movie-genres");
-        
-        document.querySelector("#movie-duration").textContent = `${Math.floor(runtime / 60)}h ${runtime % 60}min`;
-        document.querySelector("#movie-tagline").textContent = tagline || "";
-        genresContainer.innerHTML = ""; // limpa antes de inserir
+        updateSecondary(movie)
 
-        genres.forEach(({ name }) => {
-            const badge = document.createElement("span");
-            badge.textContent = name;
-            badge.className = "bg-yellow-400/10 border border-yellow-500 text-yellow-300 text-xs font-semibold px-3 py-1 rounded-full";
-            genresContainer.appendChild(badge);
-        });
       } catch (err) {
         console.error("Erro ao buscar detalhes do filme:", err);
         document.getElementById("movie-genre").textContent = "Desconhecido";
@@ -206,4 +180,53 @@ function showSearchResults(container) {
 function hideSearchResults(container) {
     container.classList.remove('scale-y-100', 'opacity-100', 'pointer-events-auto');
     container.classList.add('scale-y-0', 'opacity-0', 'pointer-events-none');
+}
+
+
+async function updateMain() {
+    const response = await fetch("/api/movies/popular");
+    const data = await response.json();
+
+//     for(i=0; i<=10; i++){
+//     setTimeout(() => {
+        
+//     }, "30000")
+// }
+    const movie = data.results[0];
+    if (!movie) return;
+
+    // Atualiza os elementos principais
+    document.getElementById("movie-title").textContent = movie.title;
+    document.getElementById("movie-rating").textContent = movie.vote_average.toFixed(1);
+    document.getElementById("movie-year").textContent = new Date(movie.release_date).getFullYear();
+    document.querySelector('.sinopse').textContent = movie.overview;
+    document.querySelector('#background-img').src = await getBackgroundImage(movie.id)
+    return movie
+}
+
+async function updateSecondary(movie) {
+    const detailRes = await fetch(`/api/movies/${movie.id}`);
+    const { runtime, tagline, genres } = await detailRes.json();
+    const genresContainer = document.getElementById("movie-genres");
+
+    document.querySelector("#movie-duration").textContent = `${Math.floor(runtime / 60)}h ${runtime % 60}min`;
+    document.querySelector("#movie-tagline").textContent = tagline || "";
+    genresContainer.innerHTML = ""; // limpa antes de inserir
+
+    genres.forEach(({ name }) => {
+        const badge = document.createElement("span");
+        badge.textContent = name;
+        badge.className = "bg-yellow-400/10 border border-yellow-500 text-yellow-300 text-xs font-semibold px-3 py-1 rounded-full";
+        genresContainer.appendChild(badge);
+    });
+}
+
+
+async function getBackgroundImage(movieId) {
+    images = await fetch(`/api/movies/${movieId}/images`);
+    data = await images.json()
+    const backdrops = data['backdrops'][0]
+    const file_path = backdrops['file_path']
+    
+    return `https://image.tmdb.org/t/p/original/${file_path}`
 }

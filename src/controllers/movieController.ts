@@ -40,7 +40,7 @@ export const getMovieImages = async (
 ) => {
   try {
     const { id } = req.params;
-    const data = await getTMDBData(`/movie/${id}/images`);
+    const data = await getTMDBData(`/movie/${id}/images`, {include_image_language:'en,null'});
     res.json(data);
 
   }catch(error) {
@@ -48,13 +48,13 @@ export const getMovieImages = async (
   }
 }
 
-export const searchMovies = async (
+export const searchMulti = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<any> => {
   try {
-    const query = req.query.q;
+    const query = String(req.query.q || '').trim();
     const page = req.query.page ? Number(req.query.page) : 1;
     
     if (!query) {
