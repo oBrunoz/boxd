@@ -72,7 +72,8 @@ export const searchMulti = async (
 export const getMovieVideos = async (req: Request, res: Response, next: NextFunction) => {
   try {
       const { id } = req.params;
-      const data = await getTMDBData(`/movie/${id}/videos`);
+      const language = req.query.language || 'pt-BR';
+      const data = await getTMDBData(`/movie/${id}/videos`, { language });
       res.json(data);
   } catch (error) {
       next(error);
