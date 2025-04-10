@@ -1,4 +1,5 @@
 let debounceTimeout;
+
 document.addEventListener('DOMContentLoaded', () => {
     const togglePassword = document.getElementById('toggle-password');
     const password = document.getElementById('password');
@@ -68,9 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     trailerBtn.addEventListener('click', (e) => {
         e.preventDefault();
     
-        // Substitua pela URL do trailer do filme atual
         const youtubeTrailerUrl = trailerBtn.getAttribute('data-trailer-url');
-    
         if (!youtubeTrailerUrl) return;
     
         // Oculta a imagem de fundo com efeito
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Ativa o container do trailer
         trailerContainer.classList.remove('opacity-0', 'pointer-events-none');
-        trailerContainer.classList.add('opacity-100', 'pointer-events-auto');
+        trailerContainer.classList.add('opacity-100', 'pointer-events-auto', 'transition-all', 'duration-1000');
     
         // Insere o vídeo com autoplay
         const embedUrl = youtubeTrailerUrl.replace("watch?v=", "embed/") + "?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1";
@@ -126,10 +125,7 @@ async function getTrendingMovies() {
   
     } catch (error) {
       console.error("Erro ao buscar filmes populares:", error);
-    } finally {
-        skeleton.classList.add("hidden");
-        content.classList.remove("hidden");
-      }
+    }
 }
   
 // Função para obter o nome do gênero baseado no ID
@@ -143,13 +139,19 @@ async function getGenreName(genreId) {
 
 // Função para obter a URL do trailer do filme
 async function getTrailerUrl(movieId) {
-    const response = await fetch(`/api/movies/${movieId}/videos`);
-    const data = await response.json();
+    let response = await fetch(`/api/movies/${movieId}/videos?language=pt-BR`);
+    let data = await response.json();
+    
+    if (!data?.results?.length) {
+        response = await fetch(`/api/movies/${movieId}/videos?language=${encodeURIComponent("en-US")}`);
+        data = await response.json();
+    }
     
     const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
-    return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : "#";
+    return trailer ? `https://www.youtube.com/embed/${trailer.key}` : "#";
 }
 
+// Função para buscar filmes, séries e pessoas
 async function searchMulti(query) {
     const multiResponse = await fetch(`/api/movies/multi?q=${encodeURIComponent(query)}`);
     if (!multiResponse.ok) {
@@ -233,7 +235,7 @@ async function updateMain() {
     const response = await fetch("/api/movies/popular");
     const data = await response.json();
 
-    const movie = data.results[0];
+    const movie = data.results[3];
     if (!movie) return;
 
     // Atualiza os elementos principais
@@ -244,6 +246,8 @@ async function updateMain() {
 
     const bgImg = document.getElementById("background-img");
     const containerImg = document.getElementById("container-image");
+    const skeleton = document.getElementById("movie-skeleton");
+    const content = document.getElementById("movie-content");
 
     const newSrc = await getBackgroundImage(movie.id);
     // Pré-carrega a imagem antes de exibir
@@ -255,6 +259,9 @@ async function updateMain() {
             bgImg.classList.remove("opacity-0");
             bgImg.classList.add("opacity-30");
             containerImg.classList.remove("animate-pulse");
+
+            skeleton.classList.add("hidden");
+            content.classList.remove("hidden");
         });
     };
 
@@ -280,7 +287,7 @@ async function updateSecondary(movie) {
     });
 }
 
-
+// Função para buscar a imagem de fundo do filme
 async function getBackgroundImage(movieId) {
     images = await fetch(`/api/movies/${movieId}/images`);
     data = await images.json()
