@@ -1,0 +1,162 @@
+<%- contentFor('body') %>
+<section class="relative h-screen overflow-hidden bg-black">
+    <!-- Imagem de fundo -->
+    <div class="absolute inset-0 w-full h-full">
+        <div id="details-container-image" class="absolute inset-0 bg-black z-10">
+            <img src="<%= details.backdrop_path ? `https://image.tmdb.org/t/p/original${details.backdrop_path}` : '/images/image_not_found.png' %>" 
+                alt="<%= details.title || details.name %>" 
+                id="details-background-img"
+                class="h-full w-full object-cover transition-opacity opacity-40 duration-1000 ease-in-out">
+        </div>
+    </div>
+
+
+    <!-- Conteúdo do filme/série específico -->
+<div class="container mx-auto px-6 relative z-20 h-full flex items-center">
+    <div id="details-content" class="w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <div>
+                    <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
+                        <%= content_type === 'movies' ? 'Filme' : content_type === 'series' ? 'Série' : 'Pessoa' %>
+                    </span>
+                    <h1 class="text-5xl md:text-6xl font-bold mt-4 leading-tight text-white">
+                        <%= details.title || details.name %>
+                    </h1>
+                </div>
+                
+                <div class="flex items-center space-x-4 flex-wrap">
+                    <% if (details.vote_average) { %>
+                    <span class="flex items-center">
+                        <i class="fas fa-star text-yellow-500 mr-1"></i>
+                        <span id="details-rating"><%= details.vote_average.toFixed(1) %></span>
+                    </span>
+                    <span class="text-gray-300">|</span>
+                    <% } %>
+                    
+                    <% if (details.release_date || details.first_air_date) { %>
+                    <span id="details-year">
+                        <%= new Date(details.release_date || details.first_air_date).getFullYear() %>
+                    </span>
+                    <span class="text-gray-300">|</span>
+                    <% } %>
+                    
+                    <% if (details.runtime || details.episode_run_time) { %>
+                    <span id="details-duration">
+                        <% if (content_type === 'movies' && details.runtime) { %>
+                            <%= Math.floor(details.runtime / 60) %>h <%= details.runtime % 60 %>min
+                        <% } else if (content_type === 'series' && details.episode_run_time && details.episode_run_time.length > 0) { %>
+                            <%= details.episode_run_time[0] %> min/ep
+                        <% } %>
+                    </span>
+                    <% } %>
+                    
+                    <% if (details.tagline) { %>
+                    <span class="text-gray-300">|</span>
+                    <span id="details-tagline" class="italic text-gray-300">"<%= details.tagline %>"</span>
+                    <% } %>
+                </div>
+                
+                <!-- Gêneros -->
+                <% if (details.genres && details.genres.length > 0) { %>
+                <div id="details-genres" class="flex flex-wrap gap-2 my-3">
+                    <% details.genres.forEach(genre => { %>
+                        <span class="bg-yellow-400/10 border border-yellow-500 text-yellow-300 text-xs font-semibold px-3 py-1 rounded-full">
+                            <%= genre.name %>
+                        </span>
+                    <% }); %>
+                </div>
+                <% } %>
+                
+                <!-- Sinopse -->
+                <% if (details.overview) { %>
+                <div class="text-justify text-gray-200">
+                    <%= details.overview %>
+                </div>
+                <% } %>
+                
+                <!-- Botões -->
+                <div class="flex space-x-4 flex-wrap gap-y-3">
+                    <a id="details-trailer" href="#" data-trailer-url="#" 
+                       class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 flex items-center">
+                        <i class="fas fa-play mr-2"></i> Assistir trailer
+                    </a>
+                    <a href="#" class="px-6 py-3 bg-gray-800 bg-opacity-80 text-white rounded-full hover:bg-gray-700 transition duration-300 flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Adicionar à lista
+                    </a>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botão para rolar para baixo -->
+<div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+    <a href="#more-content" class="flex flex-col items-center text-white hover:text-red-500 transition duration-300">
+        <span class="mb-2">Detalhes</span>
+        <i class="fas fa-chevron-down text-2xl"></i>
+    </a>
+</div>
+
+<!-- Trailer container -->
+<div id="details-trailer-container" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none">
+    <iframe id="details-player"
+        class="w-full h-full border-none"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+    </iframe>
+</div>
+
+</section>
+
+<!-- Additional content section -->
+<section id="more-content" class="py-16 bg-gray-900">
+    <div class="container mx-auto px-6">
+        <!-- You can add additional content here like:
+             - Cast information
+             - Similar movies/shows
+             - Reviews
+             - Additional details -->
+
+             <% if (content_type === 'movies' || content_type === 'series') { %>
+                <!-- Cast -->
+                <h2 class="text-3xl font-bold mb-8 text-white">Elenco</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-16">
+                    <!-- This would be populated with cast data if available -->
+                    <!-- Placeholder for now -->
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                </div>
+                
+                <!-- Similar content -->
+                <h2 class="text-3xl font-bold mb-8 text-white">Conteúdo similar</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    <!-- This would be populated with similar content if available -->
+                    <!-- Placeholder for now -->
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                </div>
+            <% } else if (content_type === 'people') { %>
+                <!-- Known for -->
+                <h2 class="text-3xl font-bold mb-8 text-white">Conhecido por</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    <!-- This would be populated with the person's filmography -->
+                    <!-- Placeholder for now -->
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                    <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+                </div>
+            <% } %>
+        </div>
+</section>

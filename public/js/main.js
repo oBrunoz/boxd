@@ -1,19 +1,30 @@
 let debounceTimeout;
+let player;
 
 document.addEventListener('DOMContentLoaded', () => {
     const togglePassword = document.getElementById('toggle-password');
     const password = document.getElementById('password');
     const searchInput = document.getElementById("search-input");
     const searchResults = document.getElementById("search-results");
-    const trailerBtn = document.getElementById('movie-trailer');
-    const trailerContainer = document.getElementById('trailer-container');
-    const trailerPlayer = document.getElementById('trailer-player');
-    const backgroundImg = document.getElementById('container-image');
 
-    if (document.getElementById('movie-skeleton')) {
+    // verifica se o campo de busca existe e chama a função de configuração
+    if (searchInput && searchResults) {
+        setupSearch(searchInput, searchResults);
+    }
+    
+    const detailsTrailerBtn = document.getElementById('details-trailer');
+    if (detailsTrailerBtn) {
+        setupDetailsPageTrailer(detailsTrailerBtn);
+    }
+    
+    // verifica se o botão de trailer da página inicial existe
+    const homeTrailerBtn = document.getElementById('movie-trailer');
+    if (homeTrailerBtn && document.getElementById('movie-skeleton')) {
         setTimeout(() => {
             getTrendingMovies();
         }, 1500);
+        
+        setupHomePageTrailer(homeTrailerBtn);
     }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -35,42 +46,68 @@ document.addEventListener('DOMContentLoaded', () => {
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });
     }
+});
 
-    if (document.getElementById('search-input')) {
-        searchInput.addEventListener("input", () => {
-            const query = searchInput.value.trim();
+// Função para configurar a busca com debounce
+function setupSearch(searchInput, searchResults) {
+    let debounceTimeout;
+    
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.trim();
 
-            // Limpa o debounce anterior
-            clearTimeout(debounceTimeout);
+        // Limpa o debounce anterior
+        clearTimeout(debounceTimeout);
 
-            // Espera 400ms antes de buscar novamente
-            debounceTimeout = setTimeout(async () => {
-                if (!query) {
-                    renderSearchResults([]); // limpa resultados
-                    return;
-                }
+        // Espera 400ms antes de buscar novamente
+        debounceTimeout = setTimeout(async () => {
+            if (!query) {
+                renderSearchResults([]); // limpa resultados
+                return;
+            }
 
-                try {
-                    const results = await searchMulti(query);
-                    renderSearchResults(results);
-                } catch (error) {
-                    console.error("Erro na busca:", error);
-                }
-            }, 400);
-        });
+            try {
+                const results = await searchMulti(query);
+                renderSearchResults(results);
+            } catch (error) {
+                console.error("Erro na busca:", error);
+            }
+        }, 400);
+    });
+    
+    searchInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            hideSearchResults(searchResults);
+        }, 150);
+    });
+}
+
+// Funcão para configurar o trailer na página de detalhes
+function setupDetailsPageTrailer(trailerBtn) {
+    const trailerContainer = document.getElementById('details-trailer-container');
+    const trailerPlayer = document.getElementById('details-player');
+    const backgroundImg = document.getElementById('details-container-image');
+    
+    // Try to fetch and set trailer URL if not already set
+    if (trailerBtn.getAttribute('data-trailer-url') === '#') {
+        // Extract content type and ID from URL
+        const urlParts = window.location.pathname.split('/');
+        const contentType = urlParts[urlParts.length - 2]; // 'movies', 'series', etc.
+        const contentId = urlParts[urlParts.length - 1]; // ID
         
-        searchInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                hideSearchResults(searchResults);
-            }, 150);
-        });        
+        getTrailerUrl(contentId, contentType === 'movies' ? 'movie' : 'tv')
+            .then(url => {
+                trailerBtn.setAttribute('data-trailer-url', url);
+            })
+            .catch(err => {
+                console.error("Erro ao buscar trailer:", err);
+            });
     }
-
+    
     trailerBtn.addEventListener('click', (e) => {
         e.preventDefault();
     
         const youtubeTrailerUrl = trailerBtn.getAttribute('data-trailer-url');
-        if (!youtubeTrailerUrl) return;
+        if (!youtubeTrailerUrl || youtubeTrailerUrl === "#") return;
     
         // Oculta a imagem de fundo com efeito
         backgroundImg.classList.add('opacity-0');
@@ -78,22 +115,97 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ativa o container do trailer
         trailerContainer.classList.remove('opacity-0', 'pointer-events-none');
         trailerContainer.classList.add('opacity-100', 'pointer-events-auto', 'transition-all', 'duration-1000');
+
+        const content = document.getElementById("details-content");
+        content.classList.add('pointer-events-none', 'opacity-0', 'transition-all', 'duration-1000');
     
         // Insere o vídeo com autoplay
-        const embedUrl = youtubeTrailerUrl.replace("watch?v=", "embed/") + "?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1";
+        const embedUrl = youtubeTrailerUrl + "?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&enablejsapi=1";
         trailerPlayer.src = embedUrl;
-      });
+    });
     
-      // Fechar ao clicar fora do vídeo
-      trailerContainer.addEventListener('click', () => {
-        if (!trailerPlayer.contains(e.target)) {
-            trailerContainer.classList.add('opacity-0', 'pointer-events-none');
-            trailerContainer.classList.remove('opacity-100', 'pointer-events-auto');
-            trailerPlayer.src = '';
-            backgroundImg.classList.remove('opacity-0');
+    // Fechar ao clicar fora do vídeo
+    trailerContainer.addEventListener('click', (e) => {
+        // Verifica se o clique não foi no iframe
+        if (!e.target.closest('iframe')) {
+            closeDetailsTrailer();
         }
-      });
-})
+    });
+}
+
+// Função para configurar o trailer na página inicial
+function setupHomePageTrailer(trailerBtn) {
+    const trailerContainer = document.getElementById('trailer-container');
+    const trailerPlayer = document.getElementById('player');
+    const backgroundImg = document.getElementById('container-image');
+    
+    trailerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+    
+        const youtubeTrailerUrl = trailerBtn.getAttribute('data-trailer-url');
+        if (!youtubeTrailerUrl || youtubeTrailerUrl === "#") return;
+    
+        // Oculta a imagem de fundo com efeito
+        backgroundImg.classList.add('opacity-0');
+    
+        // Ativa o container do trailer
+        trailerContainer.classList.remove('opacity-0', 'pointer-events-none');
+        trailerContainer.classList.add('opacity-100', 'pointer-events-auto', 'transition-all', 'duration-1000');
+
+        const content = document.getElementById("movie-content");
+        content.classList.add('pointer-events-none', 'opacity-0', 'transition-all', 'duration-1000');
+    
+        // Insere o vídeo com autoplay
+        const embedUrl = youtubeTrailerUrl + "?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&enablejsapi=1";
+        trailerPlayer.src = embedUrl;
+    });
+    
+    // Fechar ao clicar fora do vídeo
+    trailerContainer.addEventListener('click', (e) => {
+        // Verifica se o clique não foi no iframe
+        if (!e.target.closest('iframe')) {
+            closeHomeTrailer();
+        }
+    });
+}
+
+// Função para fechar o trailer e restaurar a UI na página de detalhes
+function closeDetailsTrailer() {
+    const trailerContainer = document.getElementById('details-trailer-container');
+    const trailerPlayer = document.getElementById('details-player');
+    const content = document.getElementById("details-content");
+    const backgroundImg = document.getElementById('details-container-image');
+    
+    // Oculta o trailer
+    trailerContainer.classList.add('opacity-0', 'pointer-events-none');
+    trailerContainer.classList.remove('opacity-100', 'pointer-events-auto');
+    
+    // Exibe o fundo e conteúdo
+    backgroundImg.classList.remove('opacity-0');
+    content.classList.remove('pointer-events-none', 'opacity-0');
+    
+    // Limpa o src do iframe para parar o vídeo
+    trailerPlayer.src = '';
+}
+
+// Função para fechar o trailer e restaurar a UI
+function closeHomeTrailer() {
+    const trailerContainer = document.getElementById('trailer-container');
+    const trailerPlayer = document.getElementById('player');
+    const content = document.getElementById("movie-content");
+    const backgroundImg = document.getElementById('container-image');
+    
+    // Oculta o trailer
+    trailerContainer.classList.add('opacity-0', 'pointer-events-none');
+    trailerContainer.classList.remove('opacity-100', 'pointer-events-auto');
+    
+    // Exibe o fundo e conteúdo
+    backgroundImg.classList.remove('opacity-0');
+    content.classList.remove('pointer-events-none', 'opacity-0');
+    
+    // Limpa o src do iframe para parar o vídeo
+    trailerPlayer.src = '';
+}
 
 // Função para buscar filmes populares e atualizar a UI
 async function getTrendingMovies() {
@@ -138,12 +250,14 @@ async function getGenreName(genreId) {
 }
 
 // Função para obter a URL do trailer do filme
-async function getTrailerUrl(movieId) {
-    let response = await fetch(`/api/movies/${movieId}/videos?language=pt-BR`);
+async function getTrailerUrl(id, type = 'movie') {
+    const endpoint = type === 'movie' ? 'movies' : 'tv';
+    
+    let response = await fetch(`/api/${endpoint}/${id}/videos?language=pt-BR`);
     let data = await response.json();
     
     if (!data?.results?.length) {
-        response = await fetch(`/api/movies/${movieId}/videos?language=${encodeURIComponent("en-US")}`);
+        response = await fetch(`/api/${endpoint}/${id}/videos?language=${encodeURIComponent("en-US")}`);
         data = await response.json();
     }
     
@@ -191,7 +305,7 @@ function renderSearchResults(results) {
         const imagePath = item.poster_path || item.profile_path || item.backdrop_path;
         const imageUrl = imagePath 
             ? `https://image.tmdb.org/t/p/w92${imagePath}` 
-            : "images/image_not_found.png";
+            : "/images/image_not_found.png";
         
         const clone = template.content.cloneNode(true);
         const card = clone.querySelector("a");
@@ -200,7 +314,7 @@ function renderSearchResults(results) {
         const yearEl = clone.querySelector(".year");
         const typeEl = clone.querySelector(".type");
         
-        card.href = `/${item.media_type === 'movie' ? 'movies' : item.media_type === 'tv' ? 'series' : 'people'}/${item.id}`;
+        card.href = `/search/${item.media_type === 'movie' ? 'movies' : item.media_type === 'tv' ? 'series' : 'people'}/${item.id}`;
         img.classList.add("animate-pulse");
         img.src = imageUrl;
         

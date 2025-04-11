@@ -2,12 +2,12 @@
     
     <div class="app">
         <!-- Hero com vídeo em background e informações do filme -->
-        <section class="relative h-screen overflow-hidden">
+        <section class="relative h-screen overflow-hidden bg-black">
             <!-- Imagem de fundo -->
             <div class="absolute inset-0 w-full h-full">
                 <div id="container-image" class="absolute inset-0 animate-pulse bg-black bg-opacity-60 z-10">
                     <img src="" alt="" id="background-img"
-                        class="h-full w-full opacity-0 transition-opacity duration-1000 ease-in-out">
+                        class="h-full w-full object-cover opacity-0 transition-opacity duration-1000 ease-in-out">
                 </div>
             </div>
             <!-- Conteúdo do filme em destaque -->
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="movie-content" class="hidden">
+                <div id="movie-content" class="hidden ">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div class="space-y-6">
                         <div>
@@ -98,7 +98,7 @@
 
             <!-- Trailer do filme -->
             <div id="trailer-container" class="absolute inset-0 w-full h-full">
-                <iframe id="trailer-player"
+                <iframe id="player"
                 class="w-full h-full border-none"
                 frameborder="0"
                 allow="autoplay; encrypted-media"

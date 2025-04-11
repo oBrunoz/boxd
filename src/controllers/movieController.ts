@@ -25,7 +25,7 @@ export const getMovieDetails = async (
 ) => {
   try {
     const { id } = req.params;
-    const data = await getTMDBData(`/movie/${id}`);
+    const data = await getTMDBData(`/movie/${id}`, {append_to_response:'credits,similar,recommendations'});
     
     res.json(data);
   } catch (error) {
@@ -33,6 +33,7 @@ export const getMovieDetails = async (
   }
 };
 
+// Obter imagens de um filme específico
 export const getMovieImages = async (
   req: Request,
   res: Response,
@@ -48,6 +49,29 @@ export const getMovieImages = async (
   }
 }
 
+// Obter vídeos de um filme específico
+export const getMovieVideos = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+      const { id } = req.params;
+      const language = req.query.language || 'pt-BR';
+      const data = await getTMDBData(`/movie/${id}/videos`, { language });
+      res.json(data);
+  } catch (error) {
+      next(error);
+  }
+};
+
+// Obter gêneros de filmes
+export const getGenres = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+      const data = await getTMDBData(`/genre/movie/list`);
+      res.json(data);
+  } catch (error) {
+      next(error);
+  }
+};
+
+// Pesquisar filmes, séries e pessoas
 export const searchMulti = async (
   req: Request,
   res: Response,
@@ -66,25 +90,5 @@ export const searchMulti = async (
     res.json(data);
   } catch (error) {
     next(error);
-  }
-};
-
-export const getMovieVideos = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-      const { id } = req.params;
-      const language = req.query.language || 'pt-BR';
-      const data = await getTMDBData(`/movie/${id}/videos`, { language });
-      res.json(data);
-  } catch (error) {
-      next(error);
-  }
-};
-
-export const getGenres = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-      const data = await getTMDBData(`/genre/movie/list`);
-      res.json(data);
-  } catch (error) {
-      next(error);
   }
 };

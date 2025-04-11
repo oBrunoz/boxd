@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.get("/popular", getPopularMovies);
 router.get("/multi", searchMulti);
-// router.get("/search", searchMovies);
 router.get("/:id/images", getMovieImages);
 router.get("/:id/videos", getMovieVideos);
 router.get("/:id", getMovieDetails);
