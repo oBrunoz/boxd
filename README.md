@@ -1,4 +1,4 @@
-# 🎬 Boxd
+<h1 align=""> Boxd </h1>
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)
 
@@ -29,6 +29,15 @@
 | **Extras**  | Font Awesome, animações CSS, debounce de input |
 
 ---
+## 📸 Capturas de Tela
+
+<p align="center">
+  <img src="./public/images/example_image_1.png" width="300" />
+    &nbsp;&nbsp;&nbsp;
+  <img src="./public/images/example_image_2.png" width="300" />
+    &nbsp;&nbsp;&nbsp;
+  <img src="./public/images/example_image_3.png" width="300" />
+</p>
 
 ## ⚙️ Como rodar localmente
 
