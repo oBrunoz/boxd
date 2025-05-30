@@ -71,6 +71,23 @@ export const getGenres = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
+export const getTrendingMovies = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const timeWindow = req.params.time_window;
+    const page = req.query.page ? Number(req.query.page) : 1;
+    
+    if (!['day', 'week'].includes(timeWindow)) {
+      return res.status(400).json({ message: 'O parâmetro time_window deve ser "day" ou "week"' });
+    }
+    
+    const data = await getTMDBData(`/trending/movie/${timeWindow}`, { page });
+    
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+}
+
 // Pesquisar filmes, séries e pessoas
 export const searchMulti = async (
   req: Request,
