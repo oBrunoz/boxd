@@ -1,0 +1,176 @@
+<div>
+  <!-- Hero Section -->
+  <section class="relative h-screen overflow-hidden bg-black">
+
+    <!-- Background Image -->
+    <div class="absolute inset-0 w-full h-full">
+      <div id="details-container-image" class="absolute inset-0 bg-black z-10"
+        [class.animate-pulse]="isLoading()">
+        @if (backgroundUrl()) {
+          <img
+            [src]="backgroundUrl()"
+            [alt]="title"
+            class="h-full w-full object-cover opacity-40 transition-opacity duration-1000 ease-in-out"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container mx-auto px-6 relative z-20 h-full flex items-center">
+
+      @if (isLoading()) {
+        <!-- Skeleton -->
+        <div class="grid md:grid-cols-2 gap-12 items-center animate-pulse w-full">
+          <div class="space-y-6">
+            <div>
+              <div class="bg-gray-700 w-24 h-7 rounded-full"></div>
+              <div class="bg-gray-700 h-14 mt-4 w-4/5 rounded"></div>
+            </div>
+            <div class="flex items-center space-x-4">
+              <div class="bg-gray-700 w-14 h-5 rounded"></div>
+              <div class="bg-gray-700 w-16 h-5 rounded"></div>
+              <div class="bg-gray-700 w-20 h-5 rounded"></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div class="bg-gray-700 w-16 h-6 rounded-full"></div>
+              <div class="bg-gray-700 w-20 h-6 rounded-full"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="bg-gray-700 h-4 w-full rounded"></div>
+              <div class="bg-gray-700 h-4 w-full rounded"></div>
+              <div class="bg-gray-700 h-4 w-11/12 rounded"></div>
+            </div>
+            <div class="flex space-x-4">
+              <div class="bg-gray-700 w-40 h-12 rounded-full"></div>
+              <div class="bg-gray-700 w-44 h-12 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (!isLoading() && details()) {
+        <div id="details-content" class="w-full">
+          <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+              <div>
+                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
+                  {{ contentLabel }}
+                </span>
+                <h1 class="text-5xl md:text-6xl font-bold mt-4 leading-tight text-white">
+                  {{ title }}
+                </h1>
+              </div>
+
+              <div class="flex items-center space-x-4 flex-wrap text-white">
+                @if (details()!.vote_average) {
+                  <span class="flex items-center">
+                    <i class="fas fa-star text-yellow-500 mr-1"></i>
+                    {{ details()!.vote_average!.toFixed(1) }}
+                  </span>
+                  <span class="text-gray-300">|</span>
+                }
+                @if (releaseYear) {
+                  <span>{{ releaseYear }}</span>
+                  <span class="text-gray-300">|</span>
+                }
+                @if (runtime) {
+                  <span>{{ runtime }}</span>
+                }
+                @if (details()!.tagline) {
+                  <span class="text-gray-300">|</span>
+                  <span class="italic text-gray-300">"{{ details()!.tagline }}"</span>
+                }
+              </div>
+
+              <!-- Genres -->
+              @if (details()!.genres?.length) {
+                <div class="flex flex-wrap gap-2 my-3">
+                  @for (genre of details()!.genres!; track genre.id) {
+                    <span class="bg-yellow-400/10 border border-yellow-500 text-yellow-300 text-xs font-semibold px-3 py-1 rounded-full">
+                      {{ genre.name }}
+                    </span>
+                  }
+                </div>
+              }
+
+              <!-- Overview -->
+              @if (details()!.overview) {
+                <div class="text-justify text-gray-200">{{ details()!.overview }}</div>
+              }
+
+              <!-- Buttons -->
+              <div class="flex space-x-4 flex-wrap gap-y-3">
+                <button
+                  (click)="openTrailer()"
+                  [disabled]="trailerUrl() === '#'"
+                  class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i class="fas fa-play mr-2"></i> Assistir trailer
+                </button>
+                <button
+                  class="px-6 py-3 bg-gray-800 bg-opacity-80 text-white rounded-full hover:bg-gray-700 transition duration-300 flex items-center">
+                  <i class="fas fa-plus mr-2"></i> Adicionar à lista
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Scroll Down -->
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+      <a href="#more-content" class="flex flex-col items-center text-white hover:text-red-500 transition duration-300">
+        <span class="mb-2">Detalhes</span>
+        <i class="fas fa-chevron-down text-2xl"></i>
+      </a>
+    </div>
+
+    <!-- Trailer Container -->
+    <div
+      class="absolute inset-0 w-full h-full transition-all duration-700"
+      [class.opacity-0]="!isTrailerVisible()"
+      [class.pointer-events-none]="!isTrailerVisible()"
+      [class.opacity-100]="isTrailerVisible()"
+      [class.pointer-events-auto]="isTrailerVisible()"
+      (click)="closeTrailer()">
+      <iframe
+        #trailerPlayer
+        class="w-full h-full border-none"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </section>
+
+  <!-- Additional Content -->
+  <section id="more-content" class="py-16 bg-gray-900">
+    <div class="container mx-auto px-6">
+      @if (contentType() === 'movies' || contentType() === 'series') {
+        <!-- Cast placeholder -->
+        <h2 class="text-3xl font-bold mb-8 text-white">Elenco</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-16">
+          @for (item of skeletonCast; track $index) {
+            <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+          }
+        </div>
+
+        <!-- Similar content placeholder -->
+        <h2 class="text-3xl font-bold mb-8 text-white">Conteúdo similar</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          @for (item of skeletonSimilar; track $index) {
+            <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+          }
+        </div>
+      } @else if (contentType() === 'people') {
+        <h2 class="text-3xl font-bold mb-8 text-white">Conhecido por</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          @for (item of skeletonCast; track $index) {
+            <div class="bg-gray-800 rounded-lg p-2 animate-pulse h-64"></div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</div>
