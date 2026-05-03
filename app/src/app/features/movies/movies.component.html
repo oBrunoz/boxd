@@ -1,0 +1,64 @@
+<main class="bg-gray-900 min-h-screen pt-20 pb-16">
+  <section class="container mx-auto px-6">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-white">Em alta esta semana</h2>
+    </div>
+
+    @if (isLoading()) {
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        @for (item of skeletonItems; track $index) {
+          <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+            <div class="aspect-[2/3] bg-gray-700 animate-pulse"></div>
+            <div class="p-4">
+              <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
+              <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        @for (movie of movies(); track movie.id) {
+          <app-movie-card
+            [id]="movie.id"
+            [title]="movie.title"
+            [posterPath]="movie.poster_path"
+            [year]="getMovieYear(movie)"
+            [rating]="movie.vote_average"
+            mediaType="movies">
+          </app-movie-card>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Features Section -->
+  <section class="bg-gray-800 py-16 mt-16">
+    <div class="container mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-12 text-center text-white">Por que usar o Boxd?</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-gray-900 p-8 rounded-xl text-center">
+          <div class="bg-red-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-film text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4 text-white">Acompanhe filmes</h3>
+          <p class="text-gray-400">Mantenha um registro de todos os filmes que você assistiu e quer assistir.</p>
+        </div>
+        <div class="bg-gray-900 p-8 rounded-xl text-center">
+          <div class="bg-red-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-star text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4 text-white">Avalie e critique</h3>
+          <p class="text-gray-400">Compartilhe suas opiniões sobre filmes e descubra novas obras.</p>
+        </div>
+        <div class="bg-gray-900 p-8 rounded-xl text-center">
+          <div class="bg-red-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-list text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4 text-white">Crie listas</h3>
+          <p class="text-gray-400">Organize seus filmes em listas personalizadas e compartilhe com amigos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
