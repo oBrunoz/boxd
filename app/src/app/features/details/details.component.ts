@@ -10,7 +10,8 @@ import { Subject, switchMap, forkJoin, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
 import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
-import { ContentDetails } from '../../core/models/tmdb.models';
+import { ContentDetails, ImagesResponse } from '../../core/models/tmdb.models';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-details',
@@ -24,6 +25,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   contentType = signal<'movies' | 'series' | 'people'>('movies');
   trailerUrl = signal<string>('#');
   backgroundUrl = signal<string>('');
+  logoUrl = signal<string>('');
   isLoading = signal(true);
 
   skeletonCast = Array(6).fill(0);
@@ -60,21 +62,34 @@ export class DetailsComponent implements OnInit, OnDestroy {
               ? this.movieService.getTrailerUrl(id, 'tv')
               : of('#');
 
+          const imagesReq =
+            type === 'movies' || type === 'series'
+              ? this.movieService.getContentImages(id, type === 'movies' ? 'movie' : 'tv')
+              : of(null as any);
+
           return forkJoin({
             details: detailsReq.pipe(catchError(() => of(null))),
             trailerUrl: trailerReq.pipe(catchError(() => of('#'))),
+            images: imagesReq.pipe(catchError(() => of(null as ImagesResponse | null))),
           });
         })
       )
       .subscribe({
-        next: ({ details, trailerUrl }) => {
+        next: ({ details, trailerUrl, images }) => {
           this.details.set(details);
           this.trailerUrl.set(trailerUrl);
-          if (details?.backdrop_path) {
-            this.backgroundUrl.set(
-              `https://image.tmdb.org/t/p/original${details.backdrop_path}`
-            );
-          }
+
+          const backdrop = images?.backdrops?.[0]?.file_path ?? details?.backdrop_path;
+          this.backgroundUrl.set(
+            backdrop ? `${environment.tmdbImageUrl}/original${backdrop}` : ''
+          );
+
+          this.logoUrl.set(
+            images?.logos?.[0]?.file_path
+              ? `${environment.tmdbImageUrl}/original${images.logos[0].file_path}`
+              : ''
+          );
+
           this.isLoading.set(false);
         },
         error: () => this.isLoading.set(false),
