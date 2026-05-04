@@ -19,6 +19,7 @@ import { Genre } from '../../../core/models/tmdb.models';
 export class HeroSectionComponent {
   @Input() label = '';
   @Input() title = '';
+  @Input() logoUrl = '';
   @Input() backgroundUrl = '';
   @Input() isLoading = false;
   @Input() hasError = false;
@@ -48,7 +49,7 @@ export class HeroSectionComponent {
     if (!this.trailerUrl || this.trailerUrl === '#') return;
     this.isTrailerVisible.set(true);
     if (this.trailerPlayer) {
-      this.trailerPlayer.nativeElement.src = `${this.trailerUrl}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1`;
+      this.trailerPlayer.nativeElement.src = `${this.trailerUrl}?autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
     }
   }
 

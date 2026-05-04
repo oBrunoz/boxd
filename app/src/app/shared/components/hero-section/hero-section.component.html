@@ -1,7 +1,10 @@
 <section class="relative h-screen overflow-hidden bg-black">
 
   <!-- Background Image -->
-  <div class="absolute inset-0 w-full h-full">
+  <div
+    class="absolute inset-0 w-full h-full transition-opacity duration-700"
+    [class.opacity-0]="isTrailerVisible()"
+    [class.pointer-events-none]="isTrailerVisible()">
     <div class="absolute inset-0 bg-black bg-opacity-60 z-10"
       [class.animate-pulse]="isLoading">
       @if (backgroundUrl) {
@@ -18,7 +21,10 @@
   </div>
 
   <!-- Content -->
-  <div class="container mx-auto px-6 relative z-20 h-full flex items-center">
+  <div
+    class="container mx-auto px-6 relative z-20 h-full flex items-center transition-opacity duration-700"
+    [class.opacity-0]="isTrailerVisible()"
+    [class.pointer-events-none]="isTrailerVisible()">
 
     <!-- Skeleton -->
     @if (isLoading) {
@@ -74,9 +80,17 @@
         <div class="space-y-6">
           <div>
             <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm">{{ label }}</span>
-            <h1 class="text-5xl md:text-6xl font-bold mt-4 leading-tight text-white">
-              {{ title }}
-            </h1>
+            @if (logoUrl) {
+              <img
+                [src]="logoUrl"
+                [alt]="title"
+                class="mt-4 max-h-24 max-w-xs object-contain drop-shadow-lg"
+              />
+            } @else {
+              <h1 class="text-5xl md:text-6xl font-bold mt-4 leading-tight text-white">
+                {{ title }}
+              </h1>
+            }
           </div>
 
           <div class="flex items-center flex-wrap gap-x-4 text-white [&>*+*]:before:content-['•'] [&>*+*]:before:pr-4 [&>*+*]:before:text-gray-300">
@@ -133,7 +147,10 @@
   </div>
 
   <!-- Scroll Down -->
-  <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+  <div
+    class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce transition-opacity duration-700"
+    [class.opacity-0]="isTrailerVisible()"
+    [class.pointer-events-none]="isTrailerVisible()">
     <a [href]="scrollTarget" class="flex flex-col items-center text-white hover:text-red-500 transition duration-300">
       <span class="mb-2">{{ scrollLabel }}</span>
       <i class="fas fa-chevron-down text-2xl"></i>
@@ -142,7 +159,7 @@
 
   <!-- Trailer Container -->
   <div
-    class="absolute inset-0 w-full h-full transition-all duration-700"
+    class="absolute inset-0 w-full h-full transition-opacity duration-700"
     [class.opacity-0]="!isTrailerVisible()"
     [class.pointer-events-none]="!isTrailerVisible()"
     [class.opacity-100]="isTrailerVisible()"
@@ -156,4 +173,5 @@
       allowfullscreen>
     </iframe>
   </div>
+
 </section>
