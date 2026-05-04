@@ -3,6 +3,7 @@
     label="Em destaque"
     [title]="spotlight()?.movie?.title ?? ''"
     [backgroundUrl]="spotlight()?.backgroundUrl ?? ''"
+    [logoUrl]="spotlight()?.logoUrl ?? ''"
     [isLoading]="isLoading()"
     [hasError]="hasError()"
     [rating]="spotlight()?.movie?.vote_average"

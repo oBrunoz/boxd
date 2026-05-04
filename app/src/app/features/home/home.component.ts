@@ -13,6 +13,7 @@ interface SpotlightData {
   details: ContentDetails;
   backgroundUrl: string;
   trailerUrl: string;
+  logoUrl: string;
 }
 
 @Component({
