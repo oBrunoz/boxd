@@ -3,32 +3,28 @@ import {
   OnInit,
   OnDestroy,
   signal,
-  ViewChild,
-  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Subject, switchMap, forkJoin, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
+import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
 import { ContentDetails } from '../../core/models/tmdb.models';
 
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HeroSectionComponent],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css'],
 })
 export class DetailsComponent implements OnInit, OnDestroy {
-  @ViewChild('trailerPlayer') trailerPlayer?: ElementRef<HTMLIFrameElement>;
-
   details = signal<ContentDetails | null>(null);
   contentType = signal<'movies' | 'series' | 'people'>('movies');
   trailerUrl = signal<string>('#');
   backgroundUrl = signal<string>('');
   isLoading = signal(true);
-  isTrailerVisible = signal(false);
 
   skeletonCast = Array(6).fill(0);
   skeletonSimilar = Array(6).fill(0);
@@ -118,19 +114,4 @@ export class DetailsComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  openTrailer(): void {
-    const url = this.trailerUrl();
-    if (!url || url === '#') return;
-    this.isTrailerVisible.set(true);
-    if (this.trailerPlayer) {
-      this.trailerPlayer.nativeElement.src = `${url}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1`;
-    }
-  }
-
-  closeTrailer(): void {
-    this.isTrailerVisible.set(false);
-    if (this.trailerPlayer) {
-      this.trailerPlayer.nativeElement.src = '';
-    }
-  }
 }

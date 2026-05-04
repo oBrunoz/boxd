@@ -1,17 +1,11 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  signal,
-  ElementRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
+import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
 import { Movie, ContentDetails } from '../../core/models/tmdb.models';
 
 interface SpotlightData {
@@ -24,19 +18,15 @@ interface SpotlightData {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, MovieCardComponent],
+  imports: [CommonModule, RouterModule, MovieCardComponent, HeroSectionComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  @ViewChild('trailerPlayer') trailerPlayer?: ElementRef<HTMLIFrameElement>;
-
   spotlight = signal<SpotlightData | null>(null);
   trendingMovies = signal<Movie[]>([]);
   isLoading = signal(true);
   hasError = signal(false);
-  isTrailerVisible = signal(false);
-  isBgLoaded = signal(false);
 
   skeletonItems = Array(5).fill(0);
   featuresData = [
@@ -111,26 +101,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   get releaseYear(): string {
     const date = this.spotlight()?.movie?.release_date;
     return date ? String(new Date(date).getFullYear()) : '';
-  }
-
-  openTrailer(): void {
-    const url = this.spotlight()?.trailerUrl;
-    if (!url || url === '#') return;
-    this.isTrailerVisible.set(true);
-    if (this.trailerPlayer) {
-      this.trailerPlayer.nativeElement.src = `${url}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1`;
-    }
-  }
-
-  closeTrailer(): void {
-    this.isTrailerVisible.set(false);
-    if (this.trailerPlayer) {
-      this.trailerPlayer.nativeElement.src = '';
-    }
-  }
-
-  onBackgroundLoad(): void {
-    this.isBgLoaded.set(true);
   }
 
   getMovieYear(movie: Movie): string {
