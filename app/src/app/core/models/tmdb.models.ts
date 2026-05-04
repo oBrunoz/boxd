@@ -76,6 +76,7 @@ export interface ImageBackdrop {
 export interface ImagesResponse {
   backdrops: ImageBackdrop[];
   posters: ImageBackdrop[];
+  logos: ImageBackdrop[];
 }
 
 export interface ContentDetails {

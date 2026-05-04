@@ -77,6 +77,16 @@ export class MovieService {
     });
   }
 
+  getTvImages(id: number): Observable<ImagesResponse> {
+    return this.get<ImagesResponse>(`/tv/${id}/images`, {
+      include_image_language: 'en,null',
+    });
+  }
+
+  getContentImages(id: number, type: 'movie' | 'tv'): Observable<ImagesResponse> {
+    return type === 'movie' ? this.getMovieImages(id) : this.getTvImages(id);
+  }
+
   getTrailerUrl(id: number, type: 'movie' | 'tv' = 'movie'): Observable<string> {
     const videosReq = type === 'movie' ? this.getMovieVideos(id) : this.getTvVideos(id);
 
@@ -114,6 +124,7 @@ export class MovieService {
     details: ContentDetails;
     backgroundUrl: string;
     trailerUrl: string;
+    logoUrl: string;
   }> {
     return this.getPopularMovies().pipe(
       switchMap((data) => {
@@ -130,6 +141,9 @@ export class MovieService {
         details,
         backgroundUrl: images?.backdrops?.[0]
           ? `${environment.tmdbImageUrl}/original${images.backdrops[0].file_path}`
+          : '/images/image_not_found.png',
+        logoUrl: images?.logos?.[0]
+          ? `${environment.tmdbImageUrl}/original${images.logos[0].file_path}`
           : '/images/image_not_found.png',
         trailerUrl,
       }))
