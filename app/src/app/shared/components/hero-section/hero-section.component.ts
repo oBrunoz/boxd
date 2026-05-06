@@ -15,6 +15,7 @@ import { Genre } from '../../../core/models/tmdb.models';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './hero-section.component.html',
+  styleUrl: './hero-section.component.css'
 })
 export class HeroSectionComponent {
   @Input() label = '';
