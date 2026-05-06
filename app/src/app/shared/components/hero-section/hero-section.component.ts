@@ -41,6 +41,10 @@ export class HeroSectionComponent {
   isTrailerVisible = signal(false);
   isBgLoaded = signal(false);
 
+  // controle do hint para fechar trailer
+  isCloseHintVisible = signal(false);
+  private closeHintTimer?: ReturnType<typeof setTimeout>;
+
   onBackgroundLoad(): void {
     this.isBgLoaded.set(true);
   }
@@ -51,10 +55,16 @@ export class HeroSectionComponent {
     if (this.trailerPlayer) {
       this.trailerPlayer.nativeElement.src = `${this.trailerUrl}?autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
     }
+
+    this.isCloseHintVisible.set(true);
+    clearTimeout(this.closeHintTimer);
+    this.closeHintTimer = setTimeout(() => this.isCloseHintVisible.set(false), 3000);
   }
 
   closeTrailer(): void {
     this.isTrailerVisible.set(false);
+    this.isCloseHintVisible.set(false);
+    clearTimeout(this.closeHintTimer);
     if (this.trailerPlayer) {
       this.trailerPlayer.nativeElement.src = '';
     }
