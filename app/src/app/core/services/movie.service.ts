@@ -11,6 +11,7 @@ import {
   ImagesResponse,
   ContentDetails,
   MediaResult,
+  SpotlightData
 } from '../models/tmdb.models';
 
 @Injectable({
@@ -119,16 +120,10 @@ export class MovieService {
     return `${environment.tmdbImageUrl}/${size}${path}`;
   }
 
-  getSpotlightMovie(): Observable<{
-    movie: Movie;
-    details: ContentDetails;
-    backgroundUrl: string;
-    trailerUrl: string;
-    logoUrl: string;
-  }> {
+  getSpotlightMovie(): Observable<SpotlightData> {
     return this.getPopularMovies().pipe(
       switchMap((data) => {
-        const movie = data.results[3] ?? data.results[0];
+        const movie = data.results[0] ?? data.results[0];
         return forkJoin({
           movie: of(movie),
           details: this.getMovieDetails(movie.id),
@@ -147,6 +142,38 @@ export class MovieService {
           : '/images/image_not_found.png',
         trailerUrl,
       }))
+    );
+  }
+
+  getSpotlightMovies(count = 5): Observable<SpotlightData[]> {
+    return this.getPopularMovies().pipe(
+      switchMap((data) => {
+        const movies = data.results.slice(0, count);
+        
+        return forkJoin(
+          movies.map((movie) =>
+            forkJoin({
+              movie: of(movie),
+              details: this.getMovieDetails(movie.id),
+              images: this.getMovieImages(movie.id),
+              trailerUrl: this.getTrailerUrl(movie.id, 'movie'),
+            })
+          )
+        );
+      }),
+      map((results) =>
+        results.map(({ movie, details, images, trailerUrl }) => ({
+          movie,
+          details,
+          backgroundUrl: images?.backdrops?.[0]
+            ? `${environment.tmdbImageUrl}/original${images.backdrops[0].file_path}`
+            : '/images/image_not_found.png',
+          logoUrl: images?.logos?.[0]
+            ? `${environment.tmdbImageUrl}/original${images.logos[0].file_path}`
+            : '/images/image_not_found.png',
+          trailerUrl,
+        }))
+      )
     );
   }
 }
