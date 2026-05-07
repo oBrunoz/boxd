@@ -64,12 +64,12 @@
     @if (!isLoading && hasError) {
       <div class="text-center w-full">
         <div class="text-red-500 flex justify-center mb-6">
-          <lucide-icon [img]="TriangleAlert" [size]="64" strokeWidth="1.5"></lucide-icon>
+          <svg lucideTriangleAlert [size]="64" strokeWidth="1.5"></svg>
         </div>
         <h2 class="text-2xl font-bold text-white mb-3">Não foi possível carregar o conteúdo</h2>
         <p class="text-gray-400 mb-6">Verifique se a sua TMDB API Key está configurada corretamente em <code class="text-yellow-400">environments/environment.development.ts</code></p>
         <button (click)="retryClicked.emit()" class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 flex items-center gap-2 mx-auto">
-          <lucide-icon [img]="RotateCcw" [size]="16" strokeWidth="2"></lucide-icon> Tentar novamente
+          <svg lucideRotateCcw [size]="16" strokeWidth="2"></svg> Tentar novamente
         </button>
       </div>
     }
@@ -96,7 +96,7 @@
           <div class="flex items-center flex-wrap gap-x-4 text-white [&>*+*]:before:content-['•'] [&>*+*]:before:pr-4 [&>*+*]:before:text-gray-300">
             @if (rating) {
               <span class="flex items-center gap-1">
-                <lucide-icon [img]="Star" [size]="14" strokeWidth="2" class="text-yellow-500" fill="currentColor"></lucide-icon>
+                <svg lucideStar [size]="14" strokeWidth="2" class="text-yellow-500" fill="currentColor"></svg>
                 {{ rating.toFixed(1) }}
               </span>
             }
@@ -133,12 +133,12 @@
               (click)="openTrailer()"
               [disabled]="trailerUrl === '#'"
               class="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-              <lucide-icon [img]="Play" [size]="16" strokeWidth="2" fill="currentColor"></lucide-icon> Assistir trailer
+              <svg lucidePlay class="mr-1" [size]="16" strokeWidth="3" fill="currentColor"></svg> Assistir trailer
             </button>
             <button
               (click)="addToListClicked.emit()"
               class="px-6 py-3 bg-gray-800 bg-opacity-80 text-white rounded-full hover:bg-gray-700 transition duration-300 flex items-center">
-              <lucide-icon [img]="Plus" [size]="16" strokeWidth="2"></lucide-icon> Adicionar à lista
+              <svg lucidePlus class="mr-1" [size]="16" strokeWidth="2"></svg> Adicionar à lista
             </button>
           </div>
         </div>
@@ -153,7 +153,7 @@
     [class.pointer-events-none]="isTrailerVisible()">
     <a [href]="scrollTarget" class="flex flex-col items-center text-white hover:text-red-500 transition duration-300">
       <span class="mb-2">{{ scrollLabel }}</span>
-      <lucide-icon [img]="ChevronDown" [size]="28" strokeWidth="1.75"></lucide-icon>
+      <svg lucideChevronDown [size]="28" strokeWidth="1.75"></svg>
     </a>
   </div>
 

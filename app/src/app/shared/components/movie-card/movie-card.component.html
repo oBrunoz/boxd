@@ -14,7 +14,7 @@
       <span class="text-gray-400 text-sm">{{ year }}</span>
       @if (rating > 0) {
         <span class="ml-auto bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
-          <lucide-icon [img]="Star" [size]="11" strokeWidth="2" fill="currentColor"></lucide-icon>
+          <svg lucideStar [size]="11" strokeWidth="2" fill="currentColor"></svg>
           {{ rating.toFixed(1) }}
         </span>
       }

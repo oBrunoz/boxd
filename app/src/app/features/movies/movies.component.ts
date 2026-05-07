@@ -6,11 +6,12 @@ import { takeUntil } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../core/models/tmdb.models';
+import { LucideFilm, LucideStar, LucideList } from '@lucide/angular';
 
 @Component({
   selector: 'app-movies',
   standalone: true,
-  imports: [CommonModule, RouterModule, MovieCardComponent],
+  imports: [CommonModule, RouterModule, MovieCardComponent, LucideFilm, LucideStar, LucideList],
   templateUrl: './movies.component.html',
 })
 export class MoviesComponent implements OnInit, OnDestroy {
