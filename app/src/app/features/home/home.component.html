@@ -13,8 +13,6 @@
     [genres]="spotlight()?.details?.genres ?? []"
     [overview]="spotlight()?.movie?.overview ?? ''"
     [trailerUrl]="spotlight()?.trailerUrl ?? '#'"
-    scrollLabel="Explorar mais"
-    scrollTarget="#content"
     (retryClicked)="retry()">
   </app-hero-section>
 

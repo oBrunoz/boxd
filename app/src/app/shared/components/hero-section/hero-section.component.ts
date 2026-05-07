@@ -21,7 +21,7 @@ import {
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, LucideTriangleAlert, LucideRotateCcw, LucideStar, LucidePlay, LucidePlus, LucideChevronDown],
+  imports: [CommonModule, LucideTriangleAlert, LucideRotateCcw, LucideStar, LucidePlay, LucidePlus],
   templateUrl: './hero-section.component.html',
 })
 export class HeroSectionComponent {
@@ -38,8 +38,6 @@ export class HeroSectionComponent {
   @Input() genres: Genre[] = [];
   @Input() overview = '';
   @Input() trailerUrl = '#';
-  @Input() scrollLabel = 'Ver mais';
-  @Input() scrollTarget = '#content';
 
   @Output() retryClicked = new EventEmitter<void>();
   @Output() addToListClicked = new EventEmitter<void>();

@@ -146,17 +146,6 @@
     }
   </div>
 
-  <!-- Scroll Down -->
-  <div
-    class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce transition-opacity duration-700"
-    [class.opacity-0]="isTrailerVisible()"
-    [class.pointer-events-none]="isTrailerVisible()">
-    <a [href]="scrollTarget" class="flex flex-col items-center text-white hover:text-red-500 transition duration-300">
-      <span class="mb-2">{{ scrollLabel }}</span>
-      <svg lucideChevronDown [size]="28" strokeWidth="1.75"></svg>
-    </a>
-  </div>
-
   <!-- Trailer Container -->
   <div
     class="absolute inset-0 w-full h-full transition-opacity duration-700"
