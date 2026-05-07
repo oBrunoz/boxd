@@ -6,7 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
-import { Movie, ContentDetails } from '../../core/models/tmdb.models';
+import { Movie, SpotlightData } from '../../core/models/tmdb.models';
 import {
   LucideArrowRight,
   LucideFilm,
@@ -15,14 +15,6 @@ import {
   LucideDynamicIcon,
   type LucideIcon,
 } from '@lucide/angular';
-
-interface SpotlightData {
-  movie: Movie;
-  details: ContentDetails;
-  backgroundUrl: string;
-  trailerUrl: string;
-  logoUrl: string;
-}
 
 @Component({
   selector: 'app-home',

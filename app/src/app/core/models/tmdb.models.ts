@@ -95,3 +95,11 @@ export interface ContentDetails {
   tagline?: string;
   media_type?: string;
 }
+
+export interface SpotlightData {
+  movie: Movie;
+  details: ContentDetails;
+  backgroundUrl: string;
+  trailerUrl: string;
+  logoUrl: string;
+}
