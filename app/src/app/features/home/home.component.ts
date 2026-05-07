@@ -25,12 +25,15 @@ import {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   spotlights = signal<SpotlightData[]>([]);
-  carouselCurrentIndex = signal(0);
   trendingMovies = signal<Movie[]>([]);
+  
+  // visual
+  carouselCurrentIndex = signal(0);
   isLoading = signal(true);
   hasError = signal(false);
-
+  shouldDisplayCarouselDots = signal(true);
   skeletonItems = Array(5).fill(0);
+
   featuresData: { icon: LucideIcon; title: string; desc: string }[] = [
     {
       icon: LucideFilm,
@@ -69,7 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadSpotlights(): void {
     this.movieService
-      .getSpotlightMovies()
+      .getSpotlightMovies(10)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
@@ -106,7 +109,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.autoPlayInterval = setInterval(() => {
       const next = (this.carouselCurrentIndex() + 1) % this.spotlights().length;
-      this.carouselCurrentIndex.set(next);
+            this.carouselCurrentIndex.set(next);
     }, 5000);
   }
 
@@ -132,6 +135,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getMovieYear(movie: Movie): string {
     return movie.release_date ? String(new Date(movie.release_date).getFullYear()) : '';
+  }
+
+  pauseAutoPlay(): void {
+    this.clearInterval();
+    this.shouldDisplayCarouselDots.set(false);
+    this.autoPlayInterval = null;
+  }
+
+  resumeAutoPlay(): void {
+    this.shouldDisplayCarouselDots.set(true);
+    this.startAutoPlay();
   }
 
   retry(): void {
