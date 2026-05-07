@@ -7,6 +7,7 @@ import { MovieService } from '../../core/services/movie.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
 import { Movie, ContentDetails } from '../../core/models/tmdb.models';
+import { LucideAngularModule, Film, Star, List, ArrowRight, LucideIconData } from 'lucide-angular';
 
 interface SpotlightData {
   movie: Movie;
@@ -19,30 +20,32 @@ interface SpotlightData {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, MovieCardComponent, HeroSectionComponent],
+  imports: [CommonModule, RouterModule, MovieCardComponent, HeroSectionComponent, LucideAngularModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  readonly ArrowRight = ArrowRight;
+
   spotlight = signal<SpotlightData | null>(null);
   trendingMovies = signal<Movie[]>([]);
   isLoading = signal(true);
   hasError = signal(false);
 
   skeletonItems = Array(5).fill(0);
-  featuresData = [
+  featuresData: { icon: LucideIconData; title: string; desc: string }[] = [
     {
-      icon: 'fa-film',
+      icon: Film,
       title: 'Acompanhe filmes',
       desc: 'Mantenha um registro de todos os filmes que você assistiu e quer assistir. Nunca mais perca suas recomendações.',
     },
     {
-      icon: 'fa-star',
+      icon: Star,
       title: 'Avalie e critique',
       desc: 'Compartilhe suas opiniões sobre filmes e leia avaliações de outros usuários para descobrir novas obras.',
     },
     {
-      icon: 'fa-list',
+      icon: List,
       title: 'Crie listas',
       desc: 'Organize seus filmes em listas personalizadas e compartilhe com amigos. Crie coleções temáticas e muito mais.',
     },

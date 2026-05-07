@@ -9,14 +9,30 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Genre } from '../../../core/models/tmdb.models';
+import {
+  LucideAngularModule,
+  Star,
+  Play,
+  Plus,
+  TriangleAlert,
+  RotateCcw,
+  ChevronDown,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './hero-section.component.html',
 })
 export class HeroSectionComponent {
+  readonly Star = Star;
+  readonly Play = Play;
+  readonly Plus = Plus;
+  readonly TriangleAlert = TriangleAlert;
+  readonly RotateCcw = RotateCcw;
+  readonly ChevronDown = ChevronDown;
+
   @Input() label = '';
   @Input() title = '';
   @Input() logoUrl = '';
