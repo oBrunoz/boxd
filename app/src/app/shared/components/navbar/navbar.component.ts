@@ -13,15 +13,33 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
 import { takeUntil } from 'rxjs/operators';
 import { MovieService } from '../../../core/services/movie.service';
 import { MediaResult } from '../../../core/models/tmdb.models';
+import {
+  LucideAngularModule,
+  Home,
+  Clapperboard,
+  Tv,
+  Search,
+  X,
+  UserPlus,
+  LogIn,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, LucideAngularModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  readonly Home = Home;
+  readonly Clapperboard = Clapperboard;
+  readonly Tv = Tv;
+  readonly Search = Search;
+  readonly X = X;
+  readonly UserPlus = UserPlus;
+  readonly LogIn = LogIn;
+
   sidebarOpen = signal(false);
   searchQuery = signal('');
   searchResults = signal<MediaResult[]>([]);
