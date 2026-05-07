@@ -1,17 +1,15 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LucideAngularModule, Star } from 'lucide-angular';
+import { LucideStar } from '@lucide/angular';
 
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideStar],
   templateUrl: './movie-card.component.html',
 })
 export class MovieCardComponent {
-  readonly Star = Star;
-
   @Input() id!: number;
   @Input() title!: string;
   @Input() posterPath: string | null = null;

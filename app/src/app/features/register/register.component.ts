@@ -2,21 +2,15 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, User, Mail, Lock, Eye, EyeOff } from 'lucide-angular';
+import { LucideUser, LucideMail, LucideLock, LucideEye, LucideEyeOff } from '@lucide/angular';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, FormsModule, LucideUser, LucideMail, LucideLock, LucideEye, LucideEyeOff],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
-  readonly User = User;
-  readonly Mail = Mail;
-  readonly Lock = Lock;
-  readonly Eye = Eye;
-  readonly EyeOff = EyeOff;
-
   name = signal('');
   email = signal('');
   password = signal('');
