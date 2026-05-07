@@ -43,6 +43,9 @@ export class HeroSectionComponent {
   @Output() retryClicked = new EventEmitter<void>();
   @Output() addToListClicked = new EventEmitter<void>();
 
+  @Output() trailerOpened = new EventEmitter<void>();
+  @Output() trailerClosed = new EventEmitter<void>();
+
   @ViewChild('trailerPlayer') trailerPlayer?: ElementRef<HTMLIFrameElement>;
 
   isTrailerVisible = signal(false);
@@ -59,6 +62,7 @@ export class HeroSectionComponent {
   openTrailer(): void {
     if (!this.trailerUrl || this.trailerUrl === '#') return;
     this.isTrailerVisible.set(true);
+    this.trailerOpened.emit();
     if (this.trailerPlayer) {
       this.trailerPlayer.nativeElement.src = `${this.trailerUrl}?autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
     }
@@ -69,6 +73,7 @@ export class HeroSectionComponent {
   }
 
   closeTrailer(): void {
+    this.trailerClosed.emit();
     this.isTrailerVisible.set(false);
     this.isCloseHintVisible.set(false);
     clearTimeout(this.closeHintTimer);

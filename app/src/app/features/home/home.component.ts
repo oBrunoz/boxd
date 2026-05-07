@@ -6,7 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
-import { Movie, ContentDetails } from '../../core/models/tmdb.models';
+import { Movie, SpotlightData } from '../../core/models/tmdb.models';
 import {
   LucideArrowRight,
   LucideFilm,
@@ -16,14 +16,6 @@ import {
   type LucideIcon,
 } from '@lucide/angular';
 
-interface SpotlightData {
-  movie: Movie;
-  details: ContentDetails;
-  backgroundUrl: string;
-  trailerUrl: string;
-  logoUrl: string;
-}
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -32,12 +24,16 @@ interface SpotlightData {
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  spotlight = signal<SpotlightData | null>(null);
+  spotlights = signal<SpotlightData[]>([]);
   trendingMovies = signal<Movie[]>([]);
+  
+  // visual
+  carouselCurrentIndex = signal(0);
   isLoading = signal(true);
   hasError = signal(false);
-
+  shouldDisplayCarouselDots = signal(true);
   skeletonItems = Array(5).fill(0);
+
   featuresData: { icon: LucideIcon; title: string; desc: string }[] = [
     {
       icon: LucideFilm,
@@ -57,29 +53,32 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   private destroy$ = new Subject<void>();
+  private autoPlayInterval: ReturnType<typeof setInterval> | null = null
 
   constructor(private movieService: MovieService) {}
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.loadSpotlight();
+      this.loadSpotlights();
       this.loadTrending();
     }, 1000);
   }
 
   ngOnDestroy(): void {
+    this.clearInterval();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  private loadSpotlight(): void {
+  private loadSpotlights(): void {
     this.movieService
-      .getSpotlightMovie()
+      .getSpotlightMovies(10)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.spotlight.set(data);
+          this.spotlights.set(data);
           this.isLoading.set(false);
+          this.startAutoPlay();
         },
         error: (err) => {
           console.error('Erro ao carregar spotlight:', err);
@@ -101,28 +100,61 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
+  private clearInterval(): void {
+    if (this.autoPlayInterval) clearInterval(this.autoPlayInterval);
+  }
+
+  private startAutoPlay() {
+    this.clearInterval();
+
+    this.autoPlayInterval = setInterval(() => {
+      const next = (this.carouselCurrentIndex() + 1) % this.spotlights().length;
+            this.carouselCurrentIndex.set(next);
+    }, 5000);
+  }
+
   get runtime(): string {
-    const rt = this.spotlight()?.details?.runtime;
+    const rt = this.currentSpotlight?.details?.runtime;
     if (!rt) return '';
     return `${Math.floor(rt / 60)}h ${rt % 60}min`;
   }
 
   get releaseYear(): string {
-    const date = this.spotlight()?.movie?.release_date;
+    const date = this.currentSpotlight?.movie?.release_date;
     return date ? String(new Date(date).getFullYear()) : '';
+  }
+
+  get currentSpotlight(): SpotlightData | undefined {
+    return this.spotlights()[this.carouselCurrentIndex()];
+  }
+
+  goToSlide(index: number) {
+    this.carouselCurrentIndex.set(index);
+    this.startAutoPlay();
   }
 
   getMovieYear(movie: Movie): string {
     return movie.release_date ? String(new Date(movie.release_date).getFullYear()) : '';
   }
 
+  pauseAutoPlay(): void {
+    this.clearInterval();
+    this.shouldDisplayCarouselDots.set(false);
+    this.autoPlayInterval = null;
+  }
+
+  resumeAutoPlay(): void {
+    this.shouldDisplayCarouselDots.set(true);
+    this.startAutoPlay();
+  }
+
   retry(): void {
     this.isLoading.set(true);
     this.hasError.set(false);
-    this.spotlight.set(null);
+    this.spotlights.set([]);
     this.trendingMovies.set([]);
     setTimeout(() => {
-      this.loadSpotlight();
+      this.loadSpotlights();
       this.loadTrending();
     }, 500);
   }
