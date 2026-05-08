@@ -15,13 +15,13 @@ import {
   LucideStar,
   LucidePlay,
   LucidePlus,
-  LucideChevronDown,
+  LucidePause,
 } from '@lucide/angular';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, LucideTriangleAlert, LucideRotateCcw, LucideStar, LucidePlay, LucidePlus],
+  imports: [CommonModule, LucideTriangleAlert, LucideRotateCcw, LucideStar, LucidePlay, LucidePlus, LucidePause],
   templateUrl: './hero-section.component.html',
   styleUrl: './hero-section.component.css'
 })

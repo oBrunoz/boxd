@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.autoPlayInterval = setInterval(() => {
       const next = (this.carouselCurrentIndex() + 1) % this.spotlights().length;
             this.carouselCurrentIndex.set(next);
-    }, 5000);
+    }, 10000);
   }
 
   get runtime(): string {
