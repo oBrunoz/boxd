@@ -3,6 +3,7 @@ import {
   OnInit,
   OnDestroy,
   signal,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -10,13 +11,26 @@ import { Subject, switchMap, forkJoin, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
 import { MovieService } from '../../core/services/movie.service';
 import { HeroSectionComponent } from '../../shared/components/hero-section/hero-section.component';
-import { ContentDetails, ImagesResponse } from '../../core/models/tmdb.models';
+import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
+import { CastCard, MappedCastMember } from '../../shared/components/cast-card/cast-card';
+import { ContentDetails, ImagesResponse, Movie, TvShow } from '../../core/models/tmdb.models';
 import { environment } from '../../../environments/environment';
+
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
+
+export interface MappedSimilarItem {
+  id: number;
+  title: string;
+  posterPath: string | null;
+  year: string;
+  rating: number;
+  mediaType: 'movies' | 'series';
+}
 
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeroSectionComponent],
+  imports: [CommonModule, RouterModule, HeroSectionComponent, MovieCardComponent, CastCard, LucideChevronLeft, LucideChevronRight],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css'],
 })
@@ -129,4 +143,38 @@ export class DetailsComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  mappedCast = computed<MappedCastMember[]>(() => {
+    const castList = this.details()?.credits?.cast || [];
+    return castList.map(actor => ({
+      ...actor,
+      profileUrl: this.movieService.getImageUrl(actor.profile_path, 'w500')
+    }));
+  });
+
+  mappedSimilar = computed<MappedSimilarItem[]>(() => {
+    const simList = this.details()?.similar?.results || [];
+    return simList
+      .filter((item): item is Movie | TvShow => 'poster_path' in item)
+      .map(item => {
+        const date = 'release_date' in item ? item.release_date : item.first_air_date;
+        const title = 'title' in item ? item.title : item.name;
+        const mediaType = this.contentType() === 'movies' ? 'movies' : 'series';
+        return {
+          id: item.id,
+          title: title,
+          posterPath: item.poster_path,
+          year: date ? String(new Date(date).getFullYear()) : '',
+          rating: item.vote_average,
+          mediaType: mediaType
+        };
+      });
+  });
+
+  scrollLeft(element: HTMLElement) {
+    element.scrollBy({ left: -element.clientWidth * 0.75, behavior: 'smooth' });
+  }
+
+  scrollRight(element: HTMLElement) {
+    element.scrollBy({ left: element.clientWidth * 0.75, behavior: 'smooth' });
+  }
 }

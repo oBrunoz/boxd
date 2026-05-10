@@ -3,6 +3,18 @@ export interface Genre {
   name: string;
 }
 
+export interface CastMember {
+  id: number;
+  name: string;
+  original_name: string;
+  profile_path: string | null;
+  character: string;
+}
+
+export interface Credits {
+  cast: CastMember[];
+}
+
 export interface Movie {
   id: number;
   title: string;
@@ -94,6 +106,8 @@ export interface ContentDetails {
   genres?: Genre[];
   tagline?: string;
   media_type?: string;
+  credits?: Credits;
+  similar?: TmdbListResponse<MediaResult>;
 }
 
 export interface SpotlightData {
