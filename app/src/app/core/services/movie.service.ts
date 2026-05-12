@@ -74,14 +74,24 @@ export class MovieService {
 
   getMovieImages(id: number): Observable<ImagesResponse> {
     return this.get<ImagesResponse>(`/movie/${id}/images`, {
-      include_image_language: 'en,null',
+      include_image_language: 'pt,en,null',
     });
   }
 
   getTvImages(id: number): Observable<ImagesResponse> {
     return this.get<ImagesResponse>(`/tv/${id}/images`, {
-      include_image_language: 'en,null',
+      include_image_language: 'pt,en,null',
     });
+  }
+
+  private pickLogoUrl(images: ImagesResponse): string {
+    const logos = images?.logos ?? [];
+    const ptLogo = logos.find((l) => l.iso_639_1 === 'pt');
+    const enLogo = logos.find((l) => l.iso_639_1 === 'en');
+    const logo = ptLogo ?? enLogo ?? logos[0];
+    return logo
+      ? `${environment.tmdbImageUrl}/original${logo.file_path}`
+      : '/images/image_not_found.png';
   }
 
   getContentImages(id: number, type: 'movie' | 'tv'): Observable<ImagesResponse> {
@@ -137,16 +147,14 @@ export class MovieService {
         backgroundUrl: images?.backdrops?.[0]
           ? `${environment.tmdbImageUrl}/original${images.backdrops[0].file_path}`
           : '/images/image_not_found.png',
-        logoUrl: images?.logos?.[0]
-          ? `${environment.tmdbImageUrl}/original${images.logos[0].file_path}`
-          : '/images/image_not_found.png',
+        logoUrl: this.pickLogoUrl(images),
         trailerUrl,
       }))
     );
   }
 
   getSpotlightMovies(count = 5): Observable<SpotlightData[]> {
-    return this.getPopularMovies().pipe(
+    return this.getTrendingMovies().pipe(
       switchMap((data) => {
         const movies = data.results.slice(0, count);
         
@@ -168,9 +176,7 @@ export class MovieService {
           backgroundUrl: images?.backdrops?.[0]
             ? `${environment.tmdbImageUrl}/original${images.backdrops[0].file_path}`
             : '/images/image_not_found.png',
-          logoUrl: images?.logos?.[0]
-            ? `${environment.tmdbImageUrl}/original${images.logos[0].file_path}`
-            : '/images/image_not_found.png',
+          logoUrl: this.pickLogoUrl(images),
           trailerUrl,
         }))
       )

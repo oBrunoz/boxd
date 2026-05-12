@@ -81,6 +81,7 @@ export interface VideoResponse {
 
 export interface ImageBackdrop {
   file_path: string;
+  iso_639_1?: string | null;
   width: number;
   height: number;
 }
