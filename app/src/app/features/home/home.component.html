@@ -39,7 +39,7 @@
   <main id="content" class="bg-[#111111] py-16">
 
     <!-- Trending Movies Section -->
-    <section class="container mx-auto px-6 mb-16">
+    <section class="container min-w-full px-20 mb-16 overflow-visible">
       <div class="flex justify-between items-center mb-8">
         <h2 class="text-3xl font-bold text-white">Em alta esta semana</h2>
         <a routerLink="/movies" class="text-red-500 hover:text-red-600 flex items-center gap-1">
@@ -48,28 +48,77 @@
       </div>
 
       @if (trendingMovies().length === 0) {
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div class="flex h-full gap-4 overflow-hidden pb-2">
           @for (item of skeletonItems; track $index) {
-            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-none w-52">
               <div class="aspect-[2/3] bg-gray-700 animate-pulse"></div>
-              <div class="p-4">
-                <div class="h-5 bg-gray-700 rounded animate-pulse mb-2"></div>
-                <div class="h-4 bg-gray-700 rounded animate-pulse w-2/3"></div>
+              <div class="p-3">
+                <div class="h-4 bg-gray-700 rounded animate-pulse mb-2"></div>
+                <div class="h-3 bg-gray-700 rounded animate-pulse w-2/3"></div>
               </div>
             </div>
           }
         </div>
       } @else {
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          @for (movie of trendingMovies(); track movie.id) {
-            <app-movie-card
-              [id]="movie.id"
-              [title]="movie.title"
-              [posterPath]="movie.poster_path"
-              [year]="getMovieYear(movie)"
-              [rating]="movie.vote_average"
-              mediaType="movies">
-            </app-movie-card>
+        <div class="flex h-full gap-4 overflow-hidden scrollbar-hide">
+          @for (movie of trendingMovies(); track movie.id; let i = $index; let last = $last) {
+            <div class="flex-none w-52">
+              <app-movie-card
+                [id]="movie.id"
+                [title]="movie.title"
+                [posterPath]="movie.poster_path"
+                [backdropPath]="movie.backdrop_path"
+                [year]="getMovieYear(movie)"
+                [rating]="movie.vote_average"
+                [overview]="movie.overview"
+                [genreIds]="movie.genre_ids ?? []"
+                [hoverSide]="last ? 'left' : 'right'"
+                mediaType="movies">
+              </app-movie-card>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Popular Movies Section -->
+    <section class="container min-w-full px-20 mb-16 overflow-visible">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-white">Filmes populares</h2>
+        <a routerLink="/movies" class="text-red-500 hover:text-red-600 flex items-center gap-1">
+          Ver todos <svg lucideArrowRight [size]="16" strokeWidth="2"></svg>
+        </a>
+      </div>
+
+      @if (popularMovies().length === 0) {
+        <div class="flex h-full gap-4 overflow-hidden pb-2">
+          @for (item of skeletonItems; track $index) {
+            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-none w-52">
+              <div class="aspect-[2/3] bg-gray-700 animate-pulse"></div>
+              <div class="p-3">
+                <div class="h-4 bg-gray-700 rounded animate-pulse mb-2"></div>
+                <div class="h-3 bg-gray-700 rounded animate-pulse w-2/3"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="flex h-full gap-4 overflow-hidden scrollbar-hide">
+          @for (movie of popularMovies(); track movie.id; let last = $last) {
+            <div class="flex-none w-52">
+              <app-movie-card
+                [id]="movie.id"
+                [title]="movie.title"
+                [posterPath]="movie.poster_path"
+                [backdropPath]="movie.backdrop_path"
+                [year]="getMovieYear(movie)"
+                [rating]="movie.vote_average"
+                [overview]="movie.overview"
+                [genreIds]="movie.genre_ids ?? []"
+                [hoverSide]="last ? 'left' : 'right'"
+                mediaType="movies">
+              </app-movie-card>
+            </div>
           }
         </div>
       }
