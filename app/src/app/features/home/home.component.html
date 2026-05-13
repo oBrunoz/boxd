@@ -50,7 +50,7 @@
       @if (trendingMovies().length === 0) {
         <div class="flex h-full gap-4 overflow-hidden pb-2">
           @for (item of skeletonItems; track $index) {
-            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-none w-52">
+            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-none w-60">
               <div class="aspect-[2/3] bg-gray-700 animate-pulse"></div>
               <div class="p-3">
                 <div class="h-4 bg-gray-700 rounded animate-pulse mb-2"></div>
@@ -62,7 +62,7 @@
       } @else {
         <div class="flex h-full gap-4 overflow-hidden scrollbar-hide">
           @for (movie of trendingMovies(); track movie.id; let i = $index; let last = $last) {
-            <div class="flex-none w-52">
+            <div class="flex-none w-60">
               <app-movie-card
                 [id]="movie.id"
                 [title]="movie.title"
@@ -93,7 +93,7 @@
       @if (popularMovies().length === 0) {
         <div class="flex h-full gap-4 overflow-hidden pb-2">
           @for (item of skeletonItems; track $index) {
-            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-none w-52">
+            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-none w-60">
               <div class="aspect-[2/3] bg-gray-700 animate-pulse"></div>
               <div class="p-3">
                 <div class="h-4 bg-gray-700 rounded animate-pulse mb-2"></div>
@@ -101,11 +101,11 @@
               </div>
             </div>
           }
-        </div>
+        </div> 
       } @else {
         <div class="flex h-full gap-4 overflow-hidden scrollbar-hide">
           @for (movie of popularMovies(); track movie.id; let last = $last) {
-            <div class="flex-none w-52">
+            <div class="flex-none w-60">
               <app-movie-card
                 [id]="movie.id"
                 [title]="movie.title"
