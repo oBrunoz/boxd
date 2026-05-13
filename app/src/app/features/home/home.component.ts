@@ -26,13 +26,14 @@ import {
 export class HomeComponent implements OnInit, OnDestroy {
   spotlights = signal<SpotlightData[]>([]);
   trendingMovies = signal<Movie[]>([]);
+  popularMovies = signal<Movie[]>([]);
   
   // visual
   carouselCurrentIndex = signal(0);
   isLoading = signal(true);
   hasError = signal(false);
   shouldDisplayCarouselDots = signal(true);
-  skeletonItems = Array(5).fill(0);
+  skeletonItems = Array(10).fill(0);
 
   featuresData: { icon: LucideIcon; title: string; desc: string }[] = [
     {
@@ -61,6 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.loadSpotlights();
       this.loadTrending();
+      this.loadPopular();
     }, 1000);
   }
 
@@ -97,6 +99,18 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.trendingMovies.set(data.results.slice(0, 10));
         },
         error: (err) => console.error('Erro ao carregar trending:', err),
+      });
+  }
+
+  private loadPopular(): void {
+    this.movieService
+      .getPopularMovies()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.popularMovies.set(data.results.slice(0, 10));
+        },
+        error: (err) => console.error('Erro ao carregar populares:', err),
       });
   }
 
@@ -153,9 +167,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.hasError.set(false);
     this.spotlights.set([]);
     this.trendingMovies.set([]);
+    this.popularMovies.set([]);
     setTimeout(() => {
       this.loadSpotlights();
       this.loadTrending();
+      this.loadPopular();
     }, 500);
   }
 }
