@@ -1,0 +1,15 @@
+/* Paleta retrô do espectro, na ordem fixa da marca e com o creme no meio.
+   Os hexes já vêm envelhecidos: nada de filter por cima. */
+.aureola {
+  background: conic-gradient(
+    from 0deg,
+    #45417c,
+    #2880a8,
+    #78c4c4,
+    #f0e0c5,
+    #eca352,
+    #d85057,
+    #942548,
+    #45417c
+  );
+}

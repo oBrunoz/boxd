@@ -19,19 +19,25 @@ import { MovieService } from '../../../core/services/movie.service';
 import { LoadingService } from '../../../core/services/loading.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MediaResult } from '../../../core/models/tmdb.models';
-import { LucideSearch, LucideStar, LucideX } from '@lucide/angular';
+import { LucideLogOut, LucideSearch, LucideStar, LucideUser, LucideX } from '@lucide/angular';
 import { MediaFallbackComponent } from '../media-fallback/media-fallback.component';
 import { LogoComponent } from '../logo/logo.component';
+import { UserAvatarComponent } from '../user-avatar/user-avatar.component';
+
+const CARENCIA_MENU_MS = 250;
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, LucideSearch, LucideStar, LucideX, MediaFallbackComponent, LogoComponent],
+  imports: [CommonModule, RouterModule, FormsModule, LucideSearch, LucideStar, LucideX, LucideUser, LucideLogOut, MediaFallbackComponent, LogoComponent, UserAvatarComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   sidebarOpen = signal(false);
+  menuContaAberto = signal(false);
+
+  private fecharMenuTimer?: ReturnType<typeof setTimeout>;
   isScrolled = signal(false);
   searchQuery = signal('');
   searchResults = signal<MediaResult[]>([]);
@@ -85,12 +91,43 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearTimeout(this.fecharMenuTimer);
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  // hover sozinho deixaria o menu inalcançável no toque e no teclado
+  alternarMenuConta(): void {
+    this.menuContaAberto.update((v) => !v);
+  }
+
+  abrirMenuConta(): void {
+    clearTimeout(this.fecharMenuTimer);
+    this.menuContaAberto.set(true);
+  }
+
+  // carência: o trajeto do avatar até o item costuma sair da caixa por um
+  // instante, e fechar na hora tornaria o menu impossível de alcançar
+  agendarFechamentoMenu(): void {
+    clearTimeout(this.fecharMenuTimer);
+    this.fecharMenuTimer = setTimeout(() => this.menuContaAberto.set(false), CARENCIA_MENU_MS);
+  }
+
+  fecharMenuConta(): void {
+    clearTimeout(this.fecharMenuTimer);
+    this.menuContaAberto.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  aoClicarFora(evento: MouseEvent): void {
+    if (!this.menuContaAberto()) return;
+    const alvo = evento.target as HTMLElement | null;
+    if (!alvo?.closest('[data-menu-conta]')) this.menuContaAberto.set(false);
+  }
+
   sair(): void {
     this.closeSidebar();
+    this.fecharMenuConta();
     this.auth
       .sair()
       .pipe(takeUntil(this.destroy$))
@@ -206,6 +243,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.sidebarOpen.set(false);
+    this.menuContaAberto.set(false);
     this.showResults.set(false);
     this.activeIndex.set(-1);
     this.searchInput?.nativeElement.blur();

@@ -9,11 +9,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { AvaliacaoService } from '../../core/services/avaliacao.service';
 import { WatchlistService } from '../../core/services/watchlist.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
+import { UserAvatarComponent } from '../../shared/components/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, MovieCardComponent, LucideX, LucideTrash2],
+  imports: [CommonModule, RouterModule, MovieCardComponent, UserAvatarComponent, LucideX, LucideTrash2],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit, OnDestroy {

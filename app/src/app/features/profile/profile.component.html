@@ -1,12 +1,21 @@
 <div class="pt-32 pb-20">
-  <section class="px-20">
-    <h1 class="text-4xl font-bold text-white">{{ auth.usuario()?.name }}</h1>
-    <div class="mt-4 flex flex-wrap items-center gap-6 text-gray-400">
-      <span>{{ watchlist().length }} na watchlist</span>
-      <span>{{ avaliacoes().length }} avaliações</span>
-      @if (notaMedia(); as media) {
-        <span class="text-yellow-400">{{ media | number: '1.1-1' }} de nota média</span>
-      }
+  <section class="px-20 flex flex-wrap items-center gap-8">
+    <app-user-avatar
+      [nome]="auth.usuario()?.name ?? ''"
+      [avatarUrl]="auth.usuario()?.avatarUrl ?? null"
+      tamanho="lg">
+    </app-user-avatar>
+
+    <div>
+      <h1 class="text-4xl font-bold text-white">{{ auth.usuario()?.name }}</h1>
+      <p class="mt-2 text-gray-400">/{{ auth.usuario()?.username }}</p>
+      <div class="mt-4 flex flex-wrap items-center gap-6 text-gray-400">
+        <span>{{ watchlist().length }} na watchlist</span>
+        <span>{{ avaliacoes().length }} avaliações</span>
+        @if (notaMedia(); as media) {
+          <span class="text-yellow-400">{{ media | number: '1.1-1' }} de nota média</span>
+        }
+      </div>
     </div>
   </section>
 
