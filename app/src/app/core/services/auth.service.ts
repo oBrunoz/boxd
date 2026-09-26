@@ -2,7 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Credenciais, DadosCadastro, PublicUser, SessionResponse } from '../models/auth.models';
+import {
+  AtualizacaoPerfil,
+  Credenciais,
+  DadosCadastro,
+  PublicUser,
+  SessionResponse,
+} from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -31,6 +37,12 @@ export class AuthService {
     return this.http
       .post<SessionResponse>(`${this.base}/login`, credenciais, { withCredentials: true })
       .pipe(map((res) => this.aplicarSessao(res)));
+  }
+
+  atualizarPerfil(dados: AtualizacaoPerfil): Observable<PublicUser> {
+    return this.http
+      .patch<PublicUser>(`${environment.apiUrl}/user/me`, dados)
+      .pipe(tap((usuario) => this.usuario.set(usuario)));
   }
 
   sair(): Observable<void> {

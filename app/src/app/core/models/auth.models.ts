@@ -12,6 +12,16 @@ export interface SessionResponse {
   accessToken: string;
 }
 
+export interface AtualizacaoPerfil {
+  name?: string;
+  username?: string;
+  email?: string;
+  bio?: string;
+  // string vazia tira a foto
+  avatarUrl?: string;
+  currentPassword?: string;
+}
+
 export interface Credenciais {
   email: string;
   password: string;
