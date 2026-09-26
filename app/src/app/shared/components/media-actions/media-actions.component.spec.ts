@@ -75,6 +75,7 @@ describe('MediaActionsComponent', () => {
     componente = fixture.componentInstance;
     TestBed.inject(AuthService).usuario.set({
       id: 'u1',
+      username: 'teste',
       name: 'Teste',
       avatarUrl: null,
       bio: null,

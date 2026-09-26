@@ -1,5 +1,6 @@
 export interface PublicUser {
   id: string;
+  username: string;
   name: string;
   avatarUrl: string | null;
   bio: string | null;
@@ -18,4 +19,5 @@ export interface Credenciais {
 
 export interface DadosCadastro extends Credenciais {
   name: string;
+  username: string;
 }

@@ -32,12 +32,17 @@ export class UserService {
       const user = await this.prisma.user.create({
         data: {
           name: dto.name,
+          username: dto.username.toLowerCase(),
           email: dto.email.toLowerCase(),
           passwordHash,
         },
       });
       return UserService.toPublic(user);
     } catch (error) {
+      // o formulario tem dois campos unicos: a mensagem precisa dizer qual deles
+      if (this.isUniqueViolation(error, 'username')) {
+        throw new ConflictException('Esse nome de usuario ja esta em uso');
+      }
       if (this.isUniqueViolation(error)) {
         throw new ConflictException('E-mail ja cadastrado');
       }
@@ -70,6 +75,7 @@ export class UserService {
   static toPublic(user: User): PublicUserDto {
     return {
       id: user.id,
+      username: user.username,
       name: user.name,
       avatarUrl: user.avatarUrl,
       bio: user.bio,
@@ -77,12 +83,18 @@ export class UserService {
     };
   }
 
-  private isUniqueViolation(error: unknown): boolean {
-    return (
+  private isUniqueViolation(error: unknown, campo?: string): boolean {
+    const ehUnico =
       typeof error === 'object' &&
       error !== null &&
       'code' in error &&
-      (error as { code: unknown }).code === UNIQUE_VIOLATION
-    );
+      (error as { code: unknown }).code === UNIQUE_VIOLATION;
+
+    if (!ehUnico || !campo) return ehUnico;
+
+    const alvo = (error as { meta?: { target?: unknown } }).meta?.target;
+    const campos = Array.isArray(alvo) ? alvo.map(String) : [String(alvo ?? '')];
+
+    return campos.some((c) => c.includes(campo));
   }
 }

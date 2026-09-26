@@ -27,6 +27,7 @@ export class RegisterComponent {
   private readonly rota = inject(ActivatedRoute);
 
   name = signal('');
+  username = signal('');
   email = signal('');
   password = signal('');
   showPassword = signal(false);
@@ -44,7 +45,12 @@ export class RegisterComponent {
     this.erro.set('');
 
     this.auth
-      .cadastrar({ name: this.name(), email: this.email(), password: this.password() })
+      .cadastrar({
+        name: this.name(),
+        username: this.username(),
+        email: this.email(),
+        password: this.password(),
+      })
       .subscribe({
         next: () => {
           const destino = this.rota.snapshot.queryParamMap.get('redirect') ?? '/';
@@ -54,7 +60,7 @@ export class RegisterComponent {
           this.enviando.set(false);
           this.erro.set(
             mensagemDeErro(falha, {
-              409: 'Esse e-mail já tem uma conta. Entre nela ou use outro endereço.',
+              409: this.jaExiste(falha),
               400: this.dadoInvalido(falha),
             }),
           );
@@ -62,9 +68,19 @@ export class RegisterComponent {
       });
   }
 
+  // o cadastro tem dois campos únicos: a mensagem precisa dizer qual deles
+  private jaExiste(falha: unknown): string {
+    return erroMenciona(falha, 'usuario')
+      ? 'Esse nome de usuário já está em uso. Escolha outro.'
+      : 'Esse e-mail já tem uma conta. Entre nela ou use outro endereço.';
+  }
+
   private dadoInvalido(falha: unknown): string {
     const problemas = [
       erroMenciona(falha, 'name') ? 'Informe seu nome, com pelo menos 2 letras.' : '',
+      erroMenciona(falha, 'username')
+        ? 'O nome de usuário aceita de 3 a 20 caracteres, só letras minúsculas, números e underscore.'
+        : '',
       erroMenciona(falha, 'email') ? 'Informe um e-mail válido.' : '',
       erroMenciona(falha, 'password') ? 'A senha precisa ter pelo menos 8 caracteres.' : '',
     ].filter(Boolean);

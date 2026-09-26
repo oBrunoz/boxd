@@ -17,7 +17,12 @@ describe('Segurança (e2e)', () => {
   async function registra(nome: string) {
     const res = await server()
       .post('/auth/register')
-      .send({ name: nome, email: `${nome}-${Date.now()}@sec.test`, password: SENHA })
+      .send({
+        name: nome,
+        username: `${nome.replace(/[^a-z0-9_]/g, '')}${Date.now()}`.slice(0, 20),
+        email: `${nome}-${Date.now()}@sec.test`,
+        password: SENHA,
+      })
       .expect(201);
     return { token: res.body.accessToken, id: res.body.user.id };
   }

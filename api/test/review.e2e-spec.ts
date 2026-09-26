@@ -41,7 +41,12 @@ describe('Reviews (e2e)', () => {
 
     const registro = await request(app.getHttpServer())
       .post('/auth/register')
-      .send({ name: 'Reviews E2E', email: `reviews-${Date.now()}@teste.com`, password: SENHA })
+      .send({
+        name: 'Reviews E2E',
+        username: `rev_${Date.now()}`,
+        email: `reviews-${Date.now()}@teste.com`,
+        password: SENHA,
+      })
       .expect(201);
 
     token = registro.body.accessToken;

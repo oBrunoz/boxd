@@ -11,6 +11,7 @@ const SENHA = 'senhaforte123';
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
   let email: string;
+  let username: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,7 +29,9 @@ describe('Auth (e2e)', () => {
     );
     await app.init();
 
-    email = `e2e-${Date.now()}@teste.com`;
+    const carimbo = Date.now();
+    email = `e2e-${carimbo}@teste.com`;
+    username = `e2e_${carimbo}`;
   });
 
   afterAll(async () => {
@@ -40,7 +43,7 @@ describe('Auth (e2e)', () => {
   it('cadastra e devolve sessão sem vazar e-mail nem hash', async () => {
     const res = await server()
       .post('/auth/register')
-      .send({ name: 'E2E', email, password: SENHA })
+      .send({ name: 'E2E', username, email, password: SENHA })
       .expect(201);
 
     expect(res.body.accessToken).toBeTruthy();
@@ -50,14 +53,46 @@ describe('Auth (e2e)', () => {
   });
 
   it('recusa e-mail repetido com 409', async () => {
-    await server().post('/auth/register').send({ name: 'E2E', email, password: SENHA }).expect(409);
+    await server()
+      .post('/auth/register')
+      .send({ name: 'E2E', username: `${username}_b`, email, password: SENHA })
+      .expect(409);
   });
 
   it('recusa campo desconhecido no corpo', async () => {
     await server()
       .post('/auth/register')
-      .send({ name: 'X', email: `x-${Date.now()}@t.com`, password: SENHA, role: 'admin' })
+      .send({
+        name: 'X',
+        username: `x${Date.now()}`,
+        email: `x-${Date.now()}@t.com`,
+        password: SENHA,
+        role: 'admin',
+      })
       .expect(400);
+  });
+
+  it('recusa username repetido com 409', async () => {
+    await server()
+      .post('/auth/register')
+      .send({
+        name: 'E2E',
+        username,
+        email: `outro-${Date.now()}@teste.com`,
+        password: SENHA,
+      })
+      .expect(409);
+  });
+
+  it('expoe o username na sessao e em /auth/me', async () => {
+    const login = await server().post('/auth/login').send({ email, password: SENHA }).expect(200);
+    expect(login.body.user.username).toBe(username);
+
+    const me = await server()
+      .get('/auth/me')
+      .set('Authorization', `Bearer ${login.body.accessToken}`)
+      .expect(200);
+    expect(me.body.username).toBe(username);
   });
 
   it('responde a mesma mensagem para senha errada e e-mail inexistente', async () => {
