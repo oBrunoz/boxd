@@ -10,11 +10,20 @@ import { AvaliacaoService } from '../../core/services/avaliacao.service';
 import { WatchlistService } from '../../core/services/watchlist.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { UserAvatarComponent } from '../../shared/components/user-avatar/user-avatar.component';
+import { StripesBannerComponent } from '../../shared/components/stripes-banner/stripes-banner.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, MovieCardComponent, UserAvatarComponent, LucideX, LucideTrash2],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MovieCardComponent,
+    UserAvatarComponent,
+    StripesBannerComponent,
+    LucideX,
+    LucideTrash2,
+  ],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit, OnDestroy {
@@ -29,6 +38,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   erroWatchlist = signal('');
   erroAvaliacoes = signal('');
   removendo = signal<string | null>(null);
+
   removendoAvaliacao = signal<string | null>(null);
   confirmandoAvaliacao = signal<string | null>(null);
 
