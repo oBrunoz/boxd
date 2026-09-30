@@ -13,7 +13,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { LucideBookmark, LucideCheck, LucideEye, LucideHeart, LucideX } from '@lucide/angular';
+import { LucideBookmark, LucideCheck, LucideEye, LucideHeart } from '@lucide/angular';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { mensagemDeErro } from '../../../core/errors/mensagens';
 import { TipoMidia } from '../../../core/models/catalogo.models';
@@ -21,6 +21,7 @@ import { FICHA_VAZIA, Ficha, envioDaFicha, fichaDaAvaliacao } from '../../../cor
 import { AuthService } from '../../../core/services/auth.service';
 import { AvaliacaoService } from '../../../core/services/avaliacao.service';
 import { FichaSyncService } from '../../../core/services/ficha-sync.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { WatchlistService } from '../../../core/services/watchlist.service';
 
 const CONVITES_ASSISTIDO = [
@@ -42,9 +43,9 @@ function sortear(opcoes: string[]): string {
 @Component({
   selector: 'app-quick-actions',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideBookmark, LucideCheck, LucideEye, LucideHeart, LucideX],
+  imports: [CommonModule, RouterModule, LucideBookmark, LucideCheck, LucideEye, LucideHeart],
   templateUrl: './quick-actions.component.html',
-  // os botões entram na mesma fileira do hero e o convite quebra para baixo
+  // os botões entram na mesma fileira do hero
   host: { class: 'contents' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -63,6 +64,7 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
   private readonly watchlist = inject(WatchlistService);
   private readonly avaliacoes = inject(AvaliacaoService);
   private readonly sync = inject(FichaSyncService);
+  private readonly toast = inject(ToastService);
 
   ficha = signal<Ficha>({ ...FICHA_VAZIA });
   naWatchlist = signal(false);
@@ -70,8 +72,9 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
   // sem a ficha do servidor, gravar daqui apagaria nota e texto que o usuário já tinha
   semFicha = signal(false);
   salvando = signal(false);
-  erro = signal('');
-  convite = signal('');
+
+  // id do convite no rolo; o pai segura o banner enquanto ele está aberto
+  private conviteId: number | null = null;
 
   private cancelarCarga$ = new Subject<void>();
   private destroy$ = new Subject<void>();
@@ -92,12 +95,12 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
     this.naWatchlist.set(false);
     this.salvando.set(false);
     this.semFicha.set(false);
-    this.erro.set('');
     this.fecharConvite();
     if (this.auth.autenticado() && this.tmdbId) this.carregar();
   }
 
   ngOnDestroy(): void {
+    this.fecharConvite();
     this.cancelarCarga$.next();
     this.cancelarCarga$.complete();
     this.destroy$.next();
@@ -105,22 +108,31 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   alternarAssistido(): void {
+    if (!this.exigirLogin('Entre para marcar o que já assistiu')) return;
     const atual = this.ficha();
     const assistido = !atual.assistido;
     // nota sem ter assistido não faz sentido, igual ao formulário
-    this.gravar({ ...atual, assistido, nota: assistido ? atual.nota : null }, assistido ? CONVITES_ASSISTIDO : null);
+    this.gravar(
+      { ...atual, assistido, nota: assistido ? atual.nota : null },
+      assistido ? CONVITES_ASSISTIDO : null,
+      assistido ? 'Não marcamos como assistido' : 'Não desmarcamos o assistido',
+    );
   }
 
   alternarCurtido(): void {
+    if (!this.exigirLogin('Entre para curtir este título')) return;
     const atual = this.ficha();
     const curtido = !atual.curtido;
-    this.gravar({ ...atual, curtido }, curtido ? CONVITES_CURTIDO : null);
+    this.gravar(
+      { ...atual, curtido },
+      curtido ? CONVITES_CURTIDO : null,
+      curtido ? 'Não salvamos sua curtida' : 'Não tiramos sua curtida',
+    );
   }
 
   alternarWatchlist(): void {
-    if (!this.exigirLogin() || this.salvando()) return;
+    if (!this.exigirLogin('Entre para montar sua watchlist') || this.salvando()) return;
     this.salvando.set(true);
-    this.erro.set('');
 
     const queria = !this.naWatchlist();
     const acao: Observable<unknown> = queria
@@ -135,13 +147,13 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
       },
       error: (falha) => {
         this.naWatchlist.set(!queria);
-        this.erro.set(mensagemDeErro(falha));
+        this.falhar('Não atualizamos sua watchlist', falha);
         this.salvando.set(false);
       },
     });
   }
 
-  irParaAvaliacao(): void {
+  private irParaAvaliacao(): void {
     this.fecharConvite();
     if (this.rotaAvaliacao) {
       this.router.navigate(this.rotaAvaliacao, { fragment: 'sua-avaliacao' });
@@ -150,19 +162,36 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  fecharConvite(): void {
-    if (!this.convite()) return;
-    this.convite.set('');
+  private mostrarConvite(texto: string): void {
+    const id = this.toast.info(texto, {
+      chave: `convite-${this.tmdbId}`,
+      acao: { rotulo: 'Avaliar agora', executar: () => this.irParaAvaliacao() },
+      // saiu pelo tempo ou pelo X: o banner pode voltar a girar
+      aoFechar: () => {
+        if (this.conviteId !== id) return;
+        this.conviteId = null;
+        this.conviteVisivel.emit(false);
+      },
+    });
+
+    this.conviteId = id;
+    this.conviteVisivel.emit(true);
+  }
+
+  private fecharConvite(): void {
+    if (this.conviteId === null) return;
+    const id = this.conviteId;
+    this.conviteId = null;
+    this.toast.fechar(id);
     this.conviteVisivel.emit(false);
   }
 
-  private gravar(nova: Ficha, convites: string[] | null): void {
-    if (!this.exigirLogin() || this.salvando() || this.carregando() || this.semFicha()) return;
+  private gravar(nova: Ficha, convites: string[] | null, tituloDoErro: string): void {
+    if (this.salvando() || this.carregando() || this.semFicha()) return;
 
     const anterior = this.ficha();
     this.ficha.set(nova);
     this.salvando.set(true);
-    this.erro.set('');
     this.fecharConvite();
 
     this.avaliacoes
@@ -174,21 +203,25 @@ export class QuickActionsComponent implements OnInit, OnChanges, OnDestroy {
           this.sync.avisar(this.tmdbId, this.mediaType, this);
           // só convida quem ainda não deu nota nem escreveu
           if (convites && nova.nota === null && nova.texto === '') {
-            this.convite.set(sortear(convites));
-            this.conviteVisivel.emit(true);
+            this.mostrarConvite(sortear(convites));
           }
         },
         error: (falha) => {
           this.ficha.set(anterior);
-          this.erro.set(mensagemDeErro(falha));
+          this.falhar(tituloDoErro, falha);
           this.salvando.set(false);
         },
       });
   }
 
-  private exigirLogin(): boolean {
+  // uma chave por título: clicar de novo num atalho que falha não empilha avisos
+  private falhar(titulo: string, falha: unknown): void {
+    this.toast.erro(titulo, { detalhe: mensagemDeErro(falha), chave: `atalho-${this.tmdbId}` });
+  }
+
+  private exigirLogin(motivo: string): boolean {
     if (this.auth.autenticado()) return true;
-    this.router.navigate(['/login'], { queryParams: { redirect: this.router.url } });
+    this.auth.pedirLogin(motivo);
     return false;
   }
 

@@ -38,39 +38,5 @@
       <svg lucideBookmark [size]="20" strokeWidth="2"></svg>
     }
   </button>
-
-  @if (erro()) {
-    <span class="text-sm text-red-400" role="alert">{{ erro() }}</span>
-  }
 </div>
 
-@if (convite()) {
-  <div
-    class="basis-full mt-2 max-w-md bg-black/50 backdrop-blur-sm rounded-xl px-5 py-4 flex items-start gap-4"
-    role="status">
-    <div class="flex-1">
-      <p class="text-white">{{ convite() }}</p>
-      <div class="mt-3 flex items-center gap-4">
-        <button
-          type="button"
-          (click)="irParaAvaliacao()"
-          class="px-4 py-2 rounded-full transition duration-300 flex items-center text-sm font-medium bg-red-600 hover:bg-red-700 text-white cursor-pointer">
-          Avaliar agora
-        </button>
-        <button
-          type="button"
-          (click)="fecharConvite()"
-          class="text-sm text-gray-400 hover:text-white transition duration-300 cursor-pointer">
-          Agora não
-        </button>
-      </div>
-    </div>
-    <button
-      type="button"
-      (click)="fecharConvite()"
-      aria-label="Fechar"
-      class="text-gray-400 hover:text-white transition duration-300 cursor-pointer">
-      <svg lucideX [size]="16" strokeWidth="2"></svg>
-    </button>
-  </div>
-}

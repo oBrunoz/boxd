@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, catchError, finalize, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -9,10 +10,13 @@ import {
   PublicUser,
   SessionResponse,
 } from '../models/auth.models';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private readonly base = `${environment.apiUrl}/auth`;
 
   readonly usuario = signal<PublicUser | null>(null);
@@ -88,6 +92,18 @@ export class AuthService {
           this.usuario.set(usuario);
           resolve();
         });
+    });
+  }
+
+  // o usuário fica na página; entrar ou criar conta traz ele de volta para ela
+  pedirLogin(motivo: string): void {
+    const volta = { queryParams: { redirect: this.router.url } };
+
+    this.toast.aviso(motivo, {
+      detalhe: 'Leva menos de um minuto e você continua daqui.',
+      chave: 'login',
+      acao: { rotulo: 'Entrar', executar: () => this.router.navigate(['/login'], volta) },
+      acaoSecundaria: { rotulo: 'Criar conta', executar: () => this.router.navigate(['/register'], volta) },
     });
   }
 

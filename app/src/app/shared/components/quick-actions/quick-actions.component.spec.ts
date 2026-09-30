@@ -1,12 +1,13 @@
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AvaliacaoUsuario, EnvioAvaliacao } from '../../../core/models/catalogo.models';
 import { AuthService } from '../../../core/services/auth.service';
 import { AvaliacaoService } from '../../../core/services/avaliacao.service';
 import { FichaSyncService } from '../../../core/services/ficha-sync.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { WatchlistService } from '../../../core/services/watchlist.service';
 import { QuickActionsComponent } from './quick-actions.component';
 
@@ -62,6 +63,13 @@ describe('QuickActionsComponent', () => {
     fixture.detectChanges();
   }
 
+  function convites(): string[] {
+    return TestBed.inject(ToastService)
+      .itens()
+      .filter((t) => t.chave?.startsWith('convite'))
+      .map((t) => t.tipo);
+  }
+
   function ultimoEnvio(): EnvioAvaliacao {
     return avaliacoes.salvar.calls.mostRecent().args[0];
   }
@@ -89,7 +97,7 @@ describe('QuickActionsComponent', () => {
     componente.alternarAssistido();
 
     expect(componente.ficha().assistido).toBeTrue();
-    expect(componente.convite()).toBeTruthy();
+    expect(convites()).toEqual(['info']);
   });
 
   it('não convida quem já deu nota', () => {
@@ -98,7 +106,7 @@ describe('QuickActionsComponent', () => {
 
     componente.alternarAssistido();
 
-    expect(componente.convite()).toBe('');
+    expect(convites()).toEqual([]);
   });
 
   it('volta o botão quando a gravação falha', () => {
@@ -108,8 +116,8 @@ describe('QuickActionsComponent', () => {
     componente.alternarAssistido();
 
     expect(componente.ficha().assistido).toBeFalse();
-    expect(componente.convite()).toBe('');
-    expect(componente.erro()).toBeTruthy();
+    expect(convites()).toEqual([]);
+    expect(TestBed.inject(ToastService).itens().map((t) => t.titulo)).toEqual(['Não marcamos como assistido']);
   });
 
   it('não grava sem ter a ficha do servidor', () => {
@@ -118,6 +126,21 @@ describe('QuickActionsComponent', () => {
 
     componente.alternarAssistido();
 
+    expect(avaliacoes.salvar).not.toHaveBeenCalled();
+  });
+
+  it('pede login no próprio toast, sem sair da página', () => {
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
+    abrirTitulo(1);
+    TestBed.inject(AuthService).usuario.set(null);
+
+    componente.alternarCurtido();
+
+    const aviso = TestBed.inject(ToastService).itens().find((t) => t.chave === 'login');
+    expect(aviso?.acao?.rotulo).toBe('Entrar');
+    expect(aviso?.acaoSecundaria?.rotulo).toBe('Criar conta');
+    expect(router.navigate).not.toHaveBeenCalled();
     expect(avaliacoes.salvar).not.toHaveBeenCalled();
   });
 
