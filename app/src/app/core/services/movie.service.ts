@@ -265,7 +265,7 @@ export class MovieService {
         const trailer = data?.results?.find(
           (v) => v.type === 'Trailer' && v.site === 'YouTube'
         );
-        if (trailer) return of(`https://www.youtube.com/embed/${trailer.key}`);
+        if (trailer) return of(`https://www.youtube-nocookie.com/embed/${trailer.key}`);
 
         // Fallback: busca em inglês se não encontrar em pt-BR
         let params = new HttpParams().set('language', 'en-US');
@@ -273,7 +273,7 @@ export class MovieService {
         return this.http.get<VideoResponse>(`${this.baseUrl}${endpoint}`, { params }).pipe(
           map((d) => {
             const t = d?.results?.find((v) => v.type === 'Trailer' && v.site === 'YouTube');
-            return t ? `https://www.youtube.com/embed/${t.key}` : '#';
+            return t ? `https://www.youtube-nocookie.com/embed/${t.key}` : '#';
           }),
           catchError(() => of('#'))
         );
@@ -302,7 +302,7 @@ export class MovieService {
         ? `${environment.tmdbImageUrl}/original${images.backdrops[0].file_path}`
         : '',
       logoUrl: this.pickLogoUrl(images),
-      trailerUrl: trailer ? `https://www.youtube.com/embed/${trailer.key}` : '#',
+      trailerUrl: trailer ? `https://www.youtube-nocookie.com/embed/${trailer.key}` : '#',
     };
   }
 
@@ -389,7 +389,7 @@ export class MovieService {
         ? `${environment.tmdbImageUrl}/original${images.backdrops[0].file_path}`
         : '',
       logoUrl: this.pickLogoUrl(images),
-      trailerUrl: trailer ? `https://www.youtube.com/embed/${trailer.key}` : '#',
+      trailerUrl: trailer ? `https://www.youtube-nocookie.com/embed/${trailer.key}` : '#',
     };
   }
 }

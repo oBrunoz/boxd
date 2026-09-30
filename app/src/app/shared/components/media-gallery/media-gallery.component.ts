@@ -194,7 +194,7 @@ export class MediaGalleryComponent implements OnDestroy {
     const item = this.currentItem();
     if (!item || item.kind !== 'video') return null;
     return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.youtube.com/embed/${item.key}?autoplay=1&rel=0&modestbranding=1`
+      `https://www.youtube-nocookie.com/embed/${item.key}?autoplay=1&rel=0&modestbranding=1`
     );
   });
 
