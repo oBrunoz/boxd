@@ -1,0 +1,12 @@
+@if (aberto) {
+  <span class="chip" role="status" (animationend)="aoTerminar($event)">
+    <span class="stub">
+      <span class="fios" aria-hidden="true">
+        @for (cor of espectro; track $index) {
+          <i [style.background]="cor" [class.aceso]="zona.includes($index)"></i>
+        }
+      </span>
+    </span>
+    <span class="corpo text-[13px] font-medium text-white"><ng-content></ng-content></span>
+  </span>
+}

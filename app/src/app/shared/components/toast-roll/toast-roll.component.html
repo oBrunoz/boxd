@@ -1,0 +1,91 @@
+<div class="rolo" aria-live="polite">
+  @for (t of toast.itens(); track t.id; let primeiro = $first, ultimo = $last) {
+    <div class="rolo-slot" [class.fecha]="estaRecolhendo(t.id)">
+      <div
+        class="rolo-var"
+        [class.entra]="!t.saindo"
+        [class.sai]="t.saindo"
+        (animationend)="aoAnimar($event, t)">
+        <div
+          class="rolo-item"
+          [class.timed]="t.duracao > 0"
+          [class.corte-cima]="!primeiro"
+          [class.corte-baixo]="!ultimo"
+          [attr.role]="t.tipo === 'erro' ? 'alert' : null"
+          [style.--tick]="t.duracao / 7 + 'ms'">
+          <div class="stub">
+            <span class="fios" aria-hidden="true">
+              @for (cor of espectro; track $index) {
+                <i [style.background]="cor" [style.--i]="$index" [class.aceso]="aceso(t.tipo, $index)"></i>
+              }
+            </span>
+          </div>
+
+          <div class="corpo">
+            <div class="flex-1 min-w-0">
+              <p class="flex items-center gap-2 text-sm font-medium" [style.color]="corDoTipo[t.tipo]">
+                @switch (t.tipo) {
+                  @case ('sucesso') {
+                    <svg lucideCheck [size]="16" strokeWidth="2.4" class="shrink-0"></svg>
+                  }
+                  @case ('info') {
+                    <svg lucideInfo [size]="16" strokeWidth="2.2" class="shrink-0"></svg>
+                  }
+                  @case ('aviso') {
+                    <svg lucideTriangleAlert [size]="16" strokeWidth="2.2" class="shrink-0"></svg>
+                  }
+                  @case ('erro') {
+                    <span class="ponto" aria-hidden="true"></span>
+                  }
+                }
+                <span class="text-white">{{ t.titulo }}</span>
+              </p>
+              @if (t.detalhe) {
+                <p class="mt-0.5 text-[13px] text-gray-400">{{ t.detalhe }}</p>
+              }
+
+              @if (t.acao && t.acaoSecundaria) {
+                <div class="mt-2 flex items-center gap-4">
+                  <button
+                    type="button"
+                    (click)="executar(t, t.acao)"
+                    class="py-1 text-[13px] font-semibold text-red-600 hover:text-red-500 transition duration-300 cursor-pointer">
+                    {{ t.acao.rotulo }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="executar(t, t.acaoSecundaria)"
+                    class="py-1 text-[13px] font-medium text-gray-400 hover:text-white transition duration-300 cursor-pointer">
+                    {{ t.acaoSecundaria.rotulo }}
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (t.acao && !t.acaoSecundaria) {
+              <button
+                type="button"
+                (click)="executar(t, t.acao)"
+                class="shrink-0 px-1 py-1.5 text-[13px] font-semibold text-red-600 hover:text-red-500 transition duration-300 cursor-pointer">
+                {{ t.acao.rotulo }}
+              </button>
+            }
+            <button
+              type="button"
+              (click)="toast.fechar(t.id)"
+              aria-label="Fechar aviso"
+              class="shrink-0 p-1 rounded-full text-gray-400 hover:text-white transition duration-300 cursor-pointer">
+              <svg lucideX [size]="16" strokeWidth="2"></svg>
+            </button>
+          </div>
+        </div>
+
+        <span class="onda" aria-hidden="true">
+          @for (cor of espectro; track $index) {
+            <i [style.background]="cor"></i>
+          }
+        </span>
+      </div>
+    </div>
+  }
+</div>

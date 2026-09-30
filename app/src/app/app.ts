@@ -4,11 +4,12 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { SmoothScrollService } from './core/services/smooth-scroll.service';
 import { StripesBackdropComponent } from './shared/components/stripes-backdrop/stripes-backdrop.component';
+import { ToastRollComponent } from './shared/components/toast-roll/toast-roll.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent, StripesBackdropComponent],
+  imports: [RouterOutlet, NavbarComponent, FooterComponent, StripesBackdropComponent, ToastRollComponent],
   templateUrl: './app.html',
   styles: [
     // bloco de referência para a camada de stripes cobrir a altura do documento
