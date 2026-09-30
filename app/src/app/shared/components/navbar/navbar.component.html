@@ -166,9 +166,7 @@
     @if (auth.autenticado()) {
       <div
         data-menu-conta
-        class="hidden md:block relative"
-        (mouseenter)="abrirMenuConta()"
-        (mouseleave)="agendarFechamentoMenu()">
+        class="hidden md:block relative">
 
         <button
           type="button"
@@ -176,7 +174,7 @@
           [attr.aria-expanded]="menuContaAberto()"
           aria-haspopup="menu"
           [attr.aria-label]="'Conta de ' + (auth.usuario()?.name ?? '')"
-          class="flex items-center cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-red-500">
+          class="flex items-center cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
           <app-user-avatar
             [nome]="auth.usuario()?.name ?? ''"
             [avatarUrl]="auth.usuario()?.avatarUrl ?? null"
@@ -184,8 +182,6 @@
           </app-user-avatar>
         </button>
 
-        <!-- o painel flutua abaixo do avatar: o pt-3 é a ponte sobre esse vão,
-             senão o mouse atravessa terra de ninguém e o menu fecha no caminho -->
         <div
           class="absolute top-full right-0 pt-3 z-40"
           [class.pointer-events-none]="!menuContaAberto()">

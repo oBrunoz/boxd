@@ -24,8 +24,6 @@ import { MediaFallbackComponent } from '../media-fallback/media-fallback.compone
 import { LogoComponent } from '../logo/logo.component';
 import { UserAvatarComponent } from '../user-avatar/user-avatar.component';
 
-const CARENCIA_MENU_MS = 250;
-
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -37,7 +35,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   sidebarOpen = signal(false);
   menuContaAberto = signal(false);
 
-  private fecharMenuTimer?: ReturnType<typeof setTimeout>;
   isScrolled = signal(false);
   searchQuery = signal('');
   searchResults = signal<MediaResult[]>([]);
@@ -91,30 +88,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.fecharMenuTimer);
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // hover sozinho deixaria o menu inalcançável no toque e no teclado
   alternarMenuConta(): void {
     this.menuContaAberto.update((v) => !v);
   }
 
-  abrirMenuConta(): void {
-    clearTimeout(this.fecharMenuTimer);
-    this.menuContaAberto.set(true);
-  }
-
-  // carência: o trajeto do avatar até o item costuma sair da caixa por um
-  // instante, e fechar na hora tornaria o menu impossível de alcançar
-  agendarFechamentoMenu(): void {
-    clearTimeout(this.fecharMenuTimer);
-    this.fecharMenuTimer = setTimeout(() => this.menuContaAberto.set(false), CARENCIA_MENU_MS);
-  }
-
   fecharMenuConta(): void {
-    clearTimeout(this.fecharMenuTimer);
     this.menuContaAberto.set(false);
   }
 
