@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+@import '@fontsource-variable/sora';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -124,5 +124,5 @@ html:not(.lenis) {
 body {
   background-color: #111111;
   color: white;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Sora Variable', sans-serif;
 }
