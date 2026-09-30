@@ -12,6 +12,7 @@ import {
 } from '../../../core/models/catalogo.models';
 import { WatchlistService } from '../../../core/services/watchlist.service';
 import { FichaSyncService } from '../../../core/services/ficha-sync.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { MediaActionsComponent } from './media-actions.component';
 
 const AVALIACAO: AvaliacaoUsuario = {
@@ -105,7 +106,7 @@ describe('MediaActionsComponent', () => {
 
       // 404 no remover quer dizer que já saiu: o estado visual é que estava errado
       expect(componente.naWatchlist()).toBeFalse();
-      expect(componente.erro()).toBe('');
+      expect(TestBed.inject(ToastService).itens()).toEqual([]);
       expect(componente.salvandoWatchlist()).toBeFalse();
     });
 
@@ -235,7 +236,7 @@ describe('MediaActionsComponent', () => {
       // o usuário não perde a edição e pode tentar de novo
       expect(componente.nota()).toBe(10);
       expect(componente.alterada()).toBeTrue();
-      expect(componente.erro()).toBeTruthy();
+      expect(TestBed.inject(ToastService).itens().map((t) => t.tipo)).toEqual(['erro']);
       expect(componente.salvandoFicha()).toBeFalse();
     });
 
@@ -249,7 +250,7 @@ describe('MediaActionsComponent', () => {
 
       expect(componente.avaliacaoId()).toBeNull();
       expect(componente.nota()).toBeNull();
-      expect(componente.confirmacao()).toBe('Avaliação removida.');
+      expect(TestBed.inject(ToastService).itens().map((t) => t.titulo)).toEqual(['Avaliação removida']);
     });
 
     it('exige confirmação antes de apagar a ficha', () => {

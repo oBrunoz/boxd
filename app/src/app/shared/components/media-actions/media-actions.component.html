@@ -12,9 +12,10 @@
   <button
     type="button"
     (click)="copiarLink()"
-    class="mt-6 text-sm text-gray-400 hover:text-white transition duration-300 flex items-center gap-2 cursor-pointer">
+    class="relative mt-6 text-sm text-gray-400 hover:text-white transition duration-300 flex items-center gap-2 cursor-pointer">
     <svg lucideLink [size]="14" strokeWidth="2"></svg>
-    {{ linkCopiado() ? 'Link copiado' : 'Copiar link' }}
+    Copiar link
+    <app-mini-ingresso [aberto]="linkCopiado()" (fechou)="linkCopiado.set(false)">Link copiado</app-mini-ingresso>
   </button>
 } @else {
   <div class="max-w-3xl">
@@ -109,9 +110,10 @@
         <button
           type="button"
           (click)="copiarLink()"
-          class="w-full py-4 text-sm text-gray-400 hover:text-white transition duration-300 flex items-center justify-center gap-2 cursor-pointer">
+          class="relative w-full py-4 text-sm text-gray-400 hover:text-white transition duration-300 flex items-center justify-center gap-2 cursor-pointer">
           <svg lucideLink [size]="14" strokeWidth="2"></svg>
-          {{ linkCopiado() ? 'Link copiado' : 'Copiar link' }}
+          Copiar link
+          <app-mini-ingresso [aberto]="linkCopiado()" (fechou)="linkCopiado.set(false)">Link copiado</app-mini-ingresso>
         </button>
       </div>
     </div>
@@ -122,7 +124,7 @@
       <textarea
         id="texto-avaliacao"
         [ngModel]="texto()"
-        (ngModelChange)="texto.set($event); confirmacao.set('')"
+        (ngModelChange)="texto.set($event)"
         [disabled]="carregando()"
         rows="4"
         maxlength="5000"
@@ -159,12 +161,6 @@
           }
         }
 
-        @if (confirmacao()) {
-          <span class="text-sm text-gray-400" role="status">{{ confirmacao() }}</span>
-        }
-        @if (erro()) {
-          <span class="text-sm text-red-400" role="alert">{{ erro() }}</span>
-        }
       </div>
 
       @if (erroCarga()) {

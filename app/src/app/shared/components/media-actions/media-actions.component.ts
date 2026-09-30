@@ -36,7 +36,9 @@ import {
 import { AuthService } from '../../../core/services/auth.service';
 import { AvaliacaoService } from '../../../core/services/avaliacao.service';
 import { FichaSyncService } from '../../../core/services/ficha-sync.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { WatchlistService } from '../../../core/services/watchlist.service';
+import { MiniIngressoComponent } from '../mini-ingresso/mini-ingresso.component';
 
 const ESTRELAS = [1, 2, 3, 4, 5];
 
@@ -60,6 +62,7 @@ interface Gravacao {
     LucideLink,
     LucideStar,
     LucideTrash2,
+    MiniIngressoComponent,
   ],
   templateUrl: './media-actions.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,6 +76,7 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
   private readonly watchlist = inject(WatchlistService);
   private readonly avaliacoes = inject(AvaliacaoService);
   private readonly sync = inject(FichaSyncService);
+  private readonly toast = inject(ToastService);
 
   readonly estrelas = ESTRELAS;
 
@@ -92,8 +96,6 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
   salvandoWatchlist = signal(false);
   salvandoFicha = signal(false);
   erroCarga = signal('');
-  erro = signal('');
-  confirmacao = signal('');
   confirmandoExclusao = signal(false);
   linkCopiado = signal(false);
 
@@ -171,9 +173,8 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
 
   salvar(): void {
     if (!this.alterada()) return;
-    this.confirmacao.set('');
     if (this.texto().trim() !== '') this.assistido.set(true);
-    this.enfileirar(this.fichaAtual(), 'Avaliação salva.');
+    this.enfileirar(this.fichaAtual(), 'Avaliação salva');
   }
 
   apagarFicha(): void {
@@ -186,13 +187,12 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
 
     this.confirmandoExclusao.set(false);
     // ficha vazia: o backend apaga a review e devolve null
-    this.enfileirar({ ...FICHA_VAZIA }, 'Avaliação removida.');
+    this.enfileirar({ ...FICHA_VAZIA }, 'Avaliação removida');
   }
 
   alternarWatchlist(): void {
     if (this.salvandoWatchlist()) return;
     this.salvandoWatchlist.set(true);
-    this.erro.set('');
 
     const queria = !this.naWatchlist();
     const acao: Observable<unknown> = queria
@@ -210,7 +210,10 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
         if (falha instanceof HttpErrorResponse && falha.status === 404 && !queria) {
           this.naWatchlist.set(false);
         } else {
-          this.erro.set(mensagemDeErro(falha));
+          this.toast.erro('Não atualizamos sua watchlist', {
+            detalhe: mensagemDeErro(falha),
+            chave: `watchlist-${this.tmdbId}`,
+          });
         }
         this.salvandoWatchlist.set(false);
       },
@@ -218,28 +221,26 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   copiarLink(): void {
+    const falhou = () =>
+      this.toast.erro('Não deu para copiar o link', {
+        detalhe: 'Copie pela barra de endereço do navegador.',
+        chave: 'copiar-link',
+      });
+
     if (!navigator.clipboard) {
-      this.erro.set('Seu navegador não deixa copiar daqui. O link está na barra de endereço.');
+      falhou();
       return;
     }
 
-    navigator.clipboard.writeText(window.location.href).then(
-      () => {
-        this.linkCopiado.set(true);
-        setTimeout(() => this.linkCopiado.set(false), 2000);
-      },
-      () => this.erro.set('Não conseguimos copiar o link. Tente pela barra de endereço.'),
-    );
+    navigator.clipboard.writeText(window.location.href).then(() => this.linkCopiado.set(true), falhou);
   }
 
   // mexer na ficha só muda a tela; quem grava é o botão de salvar
   private editar(): void {
-    this.confirmacao.set('');
     this.confirmandoExclusao.set(false);
   }
 
   private enfileirar(ficha: Ficha, mensagem: string): void {
-    this.erro.set('');
     this.confirmandoExclusao.set(false);
     this.confirmacaoPendente = mensagem;
 
@@ -265,7 +266,7 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
     this.avaliacaoId.set(salva?.id ?? null);
 
     if (this.confirmacaoPendente) {
-      this.confirmacao.set(this.confirmacaoPendente);
+      this.toast.sucesso(this.confirmacaoPendente, { chave: `ficha-${this.tmdbId}` });
       this.confirmacaoPendente = '';
     }
 
@@ -278,7 +279,10 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
     this.confirmacaoPendente = '';
     if (alvo !== this.tmdbId) return;
 
-    this.erro.set(mensagemDeErro(falha));
+    this.toast.erro('Não salvamos sua avaliação', {
+      detalhe: mensagemDeErro(falha),
+      chave: `ficha-${this.tmdbId}`,
+    });
   }
 
   private encerrarPendente(): void {
@@ -374,8 +378,6 @@ export class MediaActionsComponent implements OnInit, OnChanges, OnDestroy {
     this.salvandoWatchlist.set(false);
     this.salvandoFicha.set(false);
     this.erroCarga.set('');
-    this.erro.set('');
-    this.confirmacao.set('');
     this.confirmandoExclusao.set(false);
     this.linkCopiado.set(false);
   }

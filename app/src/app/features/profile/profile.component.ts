@@ -5,10 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 import { Subject, takeUntil } from 'rxjs';
 import { mensagemDeErro } from '../../core/errors/mensagens';
-import { AvaliacaoUsuario, ItemWatchlist, Midia } from '../../core/models/catalogo.models';
+import { AvaliacaoUsuario, ItemWatchlist, Midia, TipoMidia } from '../../core/models/catalogo.models';
 import { AtualizacaoPerfil } from '../../core/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
 import { AvaliacaoService } from '../../core/services/avaliacao.service';
+import { ToastService } from '../../core/services/toast.service';
 import { WatchlistService } from '../../core/services/watchlist.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { UserAvatarComponent } from '../../shared/components/user-avatar/user-avatar.component';
@@ -34,6 +35,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   private readonly watchlistService = inject(WatchlistService);
   private readonly avaliacaoService = inject(AvaliacaoService);
+  private readonly toast = inject(ToastService);
 
   watchlist = signal<ItemWatchlist[]>([]);
   avaliacoes = signal<AvaliacaoUsuario[]>([]);
@@ -46,7 +48,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   editando = signal(false);
   salvandoPerfil = signal(false);
   erroPerfil = signal('');
-  perfilSalvo = signal('');
 
   formNome = signal('');
   formUsername = signal('');
@@ -111,7 +112,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.formAvatar.set(u?.avatarUrl ?? '');
     this.formSenha.set('');
     this.erroPerfil.set('');
-    this.perfilSalvo.set('');
     this.editando.set(true);
   }
 
@@ -158,7 +158,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         next: () => {
           this.salvandoPerfil.set(false);
           this.editando.set(false);
-          this.perfilSalvo.set('Perfil atualizado.');
+          this.toast.sucesso('Perfil atualizado', { chave: 'perfil' });
         },
         error: (falha) => {
           this.salvandoPerfil.set(false);
@@ -181,23 +181,47 @@ export class ProfileComponent implements OnInit, OnDestroy {
   removerDaWatchlist(item: ItemWatchlist): void {
     if (this.removendo()) return;
     this.removendo.set(item.id);
-    this.erroWatchlist.set('');
 
-    const tipo = item.media.type === 'MOVIE' ? 'movie' : 'tv';
+    const posicao = this.watchlist().indexOf(item);
 
     this.watchlistService
-      .remover(item.media.tmdbId, tipo)
+      .remover(item.media.tmdbId, this.tipoDaApi(item.media))
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.watchlist.update((itens) => itens.filter((i) => i.id !== item.id));
           this.removendo.set(null);
+          this.toast.sucesso('Removido da watchlist', {
+            detalhe: item.media.title,
+            chave: `watchlist-${item.media.tmdbId}`,
+            acao: { rotulo: 'Desfazer', executar: () => this.devolverAWatchlist(item, posicao) },
+          });
         },
         error: (falha) => {
-          this.erroWatchlist.set(mensagemDeErro(falha));
           this.removendo.set(null);
+          this.toast.erro('Não removemos da watchlist', {
+            detalhe: mensagemDeErro(falha),
+            chave: `watchlist-${item.media.tmdbId}`,
+          });
         },
       });
+  }
+
+  // sem takeUntil: o desfazer pode chegar depois de sair do perfil e precisa gravar mesmo assim
+  private devolverAWatchlist(item: ItemWatchlist, posicao: number): void {
+    this.watchlistService.adicionar(item.media.tmdbId, this.tipoDaApi(item.media)).subscribe({
+      next: () =>
+        this.watchlist.update((itens) => {
+          const lista = [...itens];
+          lista.splice(Math.min(posicao, lista.length), 0, item);
+          return lista;
+        }),
+      error: (falha) =>
+        this.toast.erro('Não devolvemos à watchlist', {
+          detalhe: mensagemDeErro(falha),
+          chave: `watchlist-${item.media.tmdbId}`,
+        }),
+    });
   }
 
   removerAvaliacao(avaliacao: AvaliacaoUsuario): void {
@@ -210,7 +234,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     this.confirmandoAvaliacao.set(null);
     this.removendoAvaliacao.set(avaliacao.id);
-    this.erroAvaliacoes.set('');
 
     this.avaliacaoService
       .remover(avaliacao.id)
@@ -219,12 +242,23 @@ export class ProfileComponent implements OnInit, OnDestroy {
         next: () => {
           this.avaliacoes.update((lista) => lista.filter((a) => a.id !== avaliacao.id));
           this.removendoAvaliacao.set(null);
+          this.toast.sucesso('Avaliação excluída', {
+            detalhe: avaliacao.media?.title,
+            chave: `avaliacao-${avaliacao.id}`,
+          });
         },
         error: (falha) => {
-          this.erroAvaliacoes.set(mensagemDeErro(falha));
           this.removendoAvaliacao.set(null);
+          this.toast.erro('Não excluímos sua avaliação', {
+            detalhe: mensagemDeErro(falha),
+            chave: `avaliacao-${avaliacao.id}`,
+          });
         },
       });
+  }
+
+  private tipoDaApi(midia: Midia): TipoMidia {
+    return midia.type === 'MOVIE' ? 'movie' : 'tv';
   }
 
   tipoDeCard(midia: Midia): 'movies' | 'series' {
