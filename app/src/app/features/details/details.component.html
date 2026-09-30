@@ -11,22 +11,24 @@
     [tagline]="details()?.tagline ?? ''"
     [genres]="details()?.genres ?? []"
     [overview]="details()?.overview ?? ''"
-    [trailerUrl]="trailerUrl()">
+    [trailerUrl]="trailerUrl()"
+    [tmdbId]="contentType() === 'people' ? null : details()?.id ?? null"
+    [mediaType]="contentType() === 'people' ? null : apiType()"
+    (avaliarClicked)="rolarParaAvaliacao()">
   </app-hero-section>
 
   @if (contentType() === 'movies' || contentType() === 'series') {
 
     <!-- Watchlist e avaliação do usuário -->
     @if (details(); as conteudo) {
-      <section class="bg-[#0d0d0d] py-16">
+      <section id="sua-avaliacao" class="bg-[#0d0d0d] py-16">
         <div class="px-20 grid lg:grid-cols-[minmax(0,1fr)_50rem] gap-12 items-start">
           <!-- sua ficha -->
           <div>
             <h2 class="text-3xl font-bold mb-8 text-white">Sua avaliação</h2>
             <app-media-actions
               [tmdbId]="conteudo.id"
-              [mediaType]="apiType()"
-              (avaliacaoAlterada)="recarregarAvaliacoesPrisma()">
+              [mediaType]="apiType()">
             </app-media-actions>
           </div>
 

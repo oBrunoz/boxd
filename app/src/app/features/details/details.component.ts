@@ -22,6 +22,8 @@ import { MediaGalleryComponent } from '../../shared/components/media-gallery/med
 import { ReviewCardComponent } from '../../shared/components/review-card/review-card.component';
 import { MediaActionsComponent } from '../../shared/components/media-actions/media-actions.component';
 import { AvaliacaoService } from '../../core/services/avaliacao.service';
+import { FichaSyncService } from '../../core/services/ficha-sync.service';
+import { SmoothScrollService } from '../../core/services/smooth-scroll.service';
 import { AvaliacaoUsuario, EstatisticasMidia } from '../../core/models/catalogo.models';
 import { mensagemDeErro } from '../../core/errors/mensagens';
 import {
@@ -111,10 +113,22 @@ export class DetailsComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
-    private avaliacaoService: AvaliacaoService
+    private avaliacaoService: AvaliacaoService,
+    private fichaSync: FichaSyncService,
+    private smoothScroll: SmoothScrollService
   ) {}
 
   ngOnInit(): void {
+    // a ficha do usuário entra nas avaliações e na contagem de curtidas
+    this.fichaSync
+      .todas()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ tmdbId, mediaType }) => {
+        if (tmdbId === this.details()?.id && mediaType === this.apiType()) {
+          this.recarregarAvaliacoesPrisma();
+        }
+      });
+
     this.route.params
       .pipe(
         takeUntil(this.destroy$),
@@ -167,6 +181,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
           this.logoUrl.set(logo ? `${environment.tmdbImageUrl}/original${logo}` : '');
 
           this.isLoading.set(false);
+
+          // veio do convite de avaliar em outro banner
+          if (this.route.snapshot.fragment === 'sua-avaliacao') {
+            setTimeout(() => this.rolarParaAvaliacao(), 300);
+          }
         },
         error: () => this.isLoading.set(false),
       });
@@ -177,6 +196,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.trocaDeTitulo$.complete();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  rolarParaAvaliacao(): void {
+    const alvo = document.getElementById('sua-avaliacao');
+    if (alvo) this.smoothScroll.scrollTo(alvo);
   }
 
   recarregarAvaliacoesPrisma(): void {
@@ -224,7 +248,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       videos.find((v) => v.type === 'Trailer' && v.iso_639_1 === 'pt') ??
       videos.find((v) => v.type === 'Trailer') ??
       videos.find((v) => v.type === 'Teaser');
-    return escolhido ? `https://www.youtube.com/embed/${escolhido.key}` : '#';
+    return escolhido ? `https://www.youtube-nocookie.com/embed/${escolhido.key}` : '#';
   }
 
   apiType = computed<'movie' | 'tv'>(() =>

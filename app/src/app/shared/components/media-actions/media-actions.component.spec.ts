@@ -11,6 +11,7 @@ import {
   ItemWatchlist,
 } from '../../../core/models/catalogo.models';
 import { WatchlistService } from '../../../core/services/watchlist.service';
+import { FichaSyncService } from '../../../core/services/ficha-sync.service';
 import { MediaActionsComponent } from './media-actions.component';
 
 const AVALIACAO: AvaliacaoUsuario = {
@@ -149,13 +150,25 @@ describe('MediaActionsComponent', () => {
       expect(larguras).toEqual(['100%', '100%', '100%', '50%']);
     });
 
-    it('marca como assistido e envia a ficha inteira ao dar nota', () => {
+    it('marca como assistido ao dar nota sem gravar ainda', () => {
       abrirTitulo(1);
       cargasDeAvaliacao[0].next(null);
 
       componente.definirNota(8);
 
       expect(componente.assistido()).toBeTrue();
+      expect(componente.alterada()).toBeTrue();
+      expect(avaliacoes.salvar).not.toHaveBeenCalled();
+    });
+
+    it('envia a ficha inteira ao salvar', () => {
+      abrirTitulo(1);
+      cargasDeAvaliacao[0].next(null);
+
+      componente.definirNota(8);
+      componente.salvar();
+
+      expect(componente.alterada()).toBeFalse();
       expect(ultimoEnvio()).toEqual({
         tmdbId: 1,
         mediaType: 'movie',
@@ -173,21 +186,55 @@ describe('MediaActionsComponent', () => {
       componente.definirNota(8);
 
       expect(componente.nota()).toBeNull();
+      componente.salvar();
       expect(ultimoEnvio().rating).toBeUndefined();
     });
   });
 
+  describe('curtida', () => {
+    it('curte sem marcar como assistido', () => {
+      abrirTitulo(1);
+      cargasDeAvaliacao[0].next(null);
+
+      componente.alternarCurtido();
+
+      expect(componente.curtido()).toBeTrue();
+      expect(componente.assistido()).toBeFalse();
+    });
+
+    it('mantém a curtida ao desmarcar assistido', () => {
+      abrirTitulo(1);
+      cargasDeAvaliacao[0].next({ ...AVALIACAO, liked: true, watchedAt: '2026-01-01T00:00:00.000Z' });
+
+      componente.alternarAssistido();
+
+      expect(componente.assistido()).toBeFalse();
+      expect(componente.curtido()).toBeTrue();
+    });
+  });
+
   describe('gravação', () => {
-    it('desfaz o estado visual quando a gravação falha', () => {
+    it('não salva quando nada mudou', () => {
+      abrirTitulo(1);
+      cargasDeAvaliacao[0].next({ ...AVALIACAO, rating: 6, watchedAt: '2026-01-01T00:00:00.000Z' });
+
+      componente.salvar();
+
+      expect(avaliacoes.salvar).not.toHaveBeenCalled();
+    });
+
+    it('mantém o que foi preenchido quando a gravação falha', () => {
       abrirTitulo(1);
       cargasDeAvaliacao[0].next({ ...AVALIACAO, rating: 6, watchedAt: '2026-01-01T00:00:00.000Z' });
       expect(componente.nota()).toBe(6);
 
       avaliacoes.salvar.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
       componente.definirNota(10);
+      componente.salvar();
 
-      // volta para a última ficha que o servidor confirmou
-      expect(componente.nota()).toBe(6);
+      // o usuário não perde a edição e pode tentar de novo
+      expect(componente.nota()).toBe(10);
+      expect(componente.alterada()).toBeTrue();
       expect(componente.erro()).toBeTruthy();
       expect(componente.salvandoFicha()).toBeFalse();
     });
@@ -224,6 +271,21 @@ describe('MediaActionsComponent', () => {
 
       expect(componente.avaliacaoId()).toBeNull();
       expect(componente.texto()).toBe('');
+    });
+  });
+
+  describe('sincronia com o banner', () => {
+    it('traz o assistido do banner sem perder a nota em rascunho', () => {
+      abrirTitulo(1);
+      cargasDeAvaliacao[0].next(null);
+      componente.definirNota(7);
+
+      TestBed.inject(FichaSyncService).avisar(1, 'movie', {});
+      cargasDeAvaliacao[1].next({ ...AVALIACAO, liked: true, watchedAt: '2026-01-01T00:00:00.000Z' });
+
+      expect(componente.curtido()).toBeTrue();
+      expect(componente.assistido()).toBeTrue();
+      expect(componente.nota()).toBe(7);
     });
   });
 

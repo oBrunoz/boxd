@@ -122,7 +122,7 @@
       <textarea
         id="texto-avaliacao"
         [ngModel]="texto()"
-        (ngModelChange)="texto.set($event)"
+        (ngModelChange)="texto.set($event); confirmacao.set('')"
         [disabled]="carregando()"
         rows="4"
         maxlength="5000"
@@ -132,10 +132,10 @@
       <div class="mt-4 flex flex-wrap items-center gap-4">
         <button
           type="button"
-          (click)="salvarTexto()"
-          [disabled]="salvandoFicha() || carregando()"
+          (click)="salvar()"
+          [disabled]="!alterada() || salvandoFicha() || carregando()"
           class="px-6 py-3 rounded-full transition duration-300 flex items-center text-sm font-medium bg-red-600 hover:bg-red-700 text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
-          {{ salvandoFicha() ? 'Salvando...' : 'Salvar avaliação' }}
+          {{ salvandoFicha() ? 'Salvando...' : 'Salvar alterações' }}
         </button>
 
         @if (avaliacaoId()) {
