@@ -80,6 +80,8 @@
     [overview]="spotlight()?.overview ?? ''"
     [trailerUrl]="spotlight()?.trailerUrl ?? '#'"
     [detailsRoute]="spotlightRoute"
+    [tmdbId]="spotlight()?.id ?? null"
+    [mediaType]="type"
     (retryClicked)="retry()">
   </app-hero-section>
   <main id="content" class="pt-16 pb-24">

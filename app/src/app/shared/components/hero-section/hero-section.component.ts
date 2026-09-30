@@ -10,6 +10,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Genre } from '../../../core/models/tmdb.models';
+import { TipoMidia } from '../../../core/models/catalogo.models';
+import { QuickActionsComponent } from '../quick-actions/quick-actions.component';
 import {
   LucideTriangleAlert,
   LucideRotateCcw,
@@ -22,7 +24,7 @@ import {
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideTriangleAlert, LucideRotateCcw, LucideStar, LucidePlay, LucidePause, LucideInfo],
+  imports: [CommonModule, RouterModule, QuickActionsComponent, LucideTriangleAlert, LucideRotateCcw, LucideStar, LucidePlay, LucidePause, LucideInfo],
   templateUrl: './hero-section.component.html',
   styleUrl: './hero-section.component.css'
 })
@@ -42,6 +44,13 @@ export class HeroSectionComponent {
   @Input() trailerUrl = '#';
   
   @Input() detailsRoute: unknown[] | null = null;
+
+  // com os dois, o hero ganha os atalhos de assistido, curtido e watchlist
+  @Input() tmdbId: number | null = null;
+  @Input() mediaType: TipoMidia | null = null;
+
+  @Output() avaliarClicked = new EventEmitter<void>();
+  @Output() conviteVisivel = new EventEmitter<boolean>();
 
   @Output() retryClicked = new EventEmitter<void>();
 

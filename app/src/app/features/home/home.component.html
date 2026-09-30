@@ -14,7 +14,10 @@
       [genres]="currentSpotlight?.details?.genres ?? []"
       [overview]="currentSpotlight?.movie?.overview ?? ''"
       [trailerUrl]="currentSpotlight?.trailerUrl ?? '#'"
-      [detailsRoute]="spotlightDetailsRoute",
+      [detailsRoute]="spotlightDetailsRoute"
+      [tmdbId]="currentSpotlight?.movie?.id ?? null"
+      mediaType="movie"
+      (conviteVisivel)="segurarDestaque($event)",
       (trailerOpened)="pauseAutoPlay()",
       (trailerClosed)="resumeAutoPlay()"
       (retryClicked)="retry()">

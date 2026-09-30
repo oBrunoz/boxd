@@ -224,6 +224,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     return serie.first_air_date ? String(new Date(serie.first_air_date).getFullYear()) : '';
   }
 
+  // o convite de avaliar some se o destaque trocar no meio da leitura
+  segurarDestaque(segurar: boolean): void {
+    if (segurar) this.clearInterval();
+    else this.startAutoPlay();
+  }
+
   pauseAutoPlay(): void {
     this.clearInterval();
     this.shouldDisplayCarouselDots.set(false);
