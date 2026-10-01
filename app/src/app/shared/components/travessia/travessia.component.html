@@ -1,0 +1,26 @@
+<!-- listras vistas pelo vão: com o grão do stripes-backdrop, numa camada só delas -->
+<svg class="listras" [attr.viewBox]="viewBox" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <clipPath [attr.id]="uid + '-vao'"><rect #vao /></clipPath>
+  </defs>
+  <g [attr.clip-path]="'url(#' + uid + '-vao)'">
+    <g opacity="0.45">
+      @for (cor of cores; track cor; let i = $index) {
+        <path [attr.d]="cena.curva" [attr.stroke]="cor" stroke-width="32" fill="none" [attr.transform]="deslocamento(i)" />
+      }
+    </g>
+  </g>
+</svg>
+
+<!-- a janela por cima, limpa; a geometria é a mesma do app-logo -->
+<svg class="janela" [attr.viewBox]="viewBox" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <g #janela>
+    @for (d of caixilho; track d) {
+      <path fill-rule="evenodd" [attr.d]="d" />
+    }
+    <g #folha>
+      <path fill-rule="evenodd" />
+      <path fill-rule="evenodd" />
+    </g>
+  </g>
+</svg>

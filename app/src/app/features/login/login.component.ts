@@ -9,13 +9,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Campos } from '../../core/validacao/campos';
 import { validarEmail, validarSenhaDigitada } from '../../core/validacao/conta';
+import { TravessiaComponent } from '../../shared/components/travessia/travessia.component';
 
 type Campo = 'email' | 'password';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, LucideMail, LucideLock, LucideEye, LucideEyeOff],
+  imports: [CommonModule, RouterModule, FormsModule, LucideMail, LucideLock, LucideEye, LucideEyeOff, TravessiaComponent],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {

@@ -1,24 +1,20 @@
-<div class="relative min-h-screen flex flex-col">
-  <!-- Background Image -->
-  <div class="absolute inset-0 w-full h-full">
-    <div class="absolute inset-0 bg-black opacity-80 z-10"></div>
-    <img
-      src="https://image.tmdb.org/t/p/original/rr7E0NoGKxvbkb89eR1GwfoYjpA.jpg"
-      alt="Background"
-      class="absolute object-cover w-full h-full"
-    />
+<div class="min-h-screen flex">
+  <!-- arte: a folha abre e a câmera atravessa a janela até as listras -->
+  <div class="relative hidden md:block md:w-[52%] shrink-0">
+    <app-travessia class="absolute inset-0"></app-travessia>
+    <div class="absolute left-20 right-12 top-28 z-10 max-w-sm">
+      <p class="text-2xl font-semibold text-white leading-snug">Tudo o que você assistiu, num lugar só.</p>
+      <p class="mt-2 text-sm text-gray-400">Notas, curtidas e a sua watchlist.</p>
+    </div>
   </div>
 
-  <!-- Login Container -->
-  <div class="container mx-auto px-4 sm:px-6 relative z-20 flex-grow flex items-center justify-center py-16 sm:py-20">
-    <div class="bg-[#111111]/90 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md">
-      <!-- Header -->
-      <div class="text-center mb-6">
+  <div class="flex-1 flex items-center justify-center px-6 sm:px-12 pt-28 pb-16 md:border-l md:border-white/5">
+    <div class="w-full max-w-sm">
+      <div class="mb-8">
         <h1 class="text-3xl font-bold text-white">Entrar</h1>
         <p class="text-sm text-gray-400 mt-2">Acompanhe e avalie seus filmes favoritos</p>
       </div>
 
-      <!-- Form -->
       <form class="space-y-5" (ngSubmit)="onSubmit()">
         <!-- E-mail -->
         <div>

@@ -19,6 +19,7 @@ import {
   validarSenhaNova,
   validarUsername,
 } from '../../core/validacao/conta';
+import { TravessiaComponent } from '../../shared/components/travessia/travessia.component';
 
 type Campo = 'name' | 'username' | 'email' | 'password';
 
@@ -34,6 +35,7 @@ type Campo = 'name' | 'username' | 'email' | 'password';
     LucideLock,
     LucideEye,
     LucideEyeOff,
+    TravessiaComponent,
   ],
   templateUrl: './register.component.html',
 })
