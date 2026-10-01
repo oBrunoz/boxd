@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ESPECTRO, ZONA_DO_TIPO } from '../../../core/models/toast.models';
+import { ESPECTRO } from '../../../core/models/espectro';
+import { ZONA_DO_TIPO } from '../../../core/models/toast.models';
 
 // confirmação pequena que sai do próprio botão; o pai precisa ser relative
 @Component({

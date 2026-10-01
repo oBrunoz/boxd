@@ -1,3 +1,5 @@
+import { ESPECTRO } from './espectro';
+
 export type TipoToast = 'info' | 'sucesso' | 'aviso' | 'erro';
 
 export interface AcaoToast {
@@ -24,9 +26,6 @@ export interface Toast extends OpcoesToast {
   duracao: number;
   saindo: boolean;
 }
-
-// a mesma ordem do espectro, sempre as sete
-export const ESPECTRO = ['#45417C', '#2880A8', '#78C4C4', '#F0E0C5', '#ECA352', '#D85057', '#942548'];
 
 // trecho do espectro que cada tipo acende, do frio (calmo) ao quente (urgente)
 export const ZONA_DO_TIPO: Record<TipoToast, number[]> = {

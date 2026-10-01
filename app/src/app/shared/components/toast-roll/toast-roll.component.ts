@@ -1,13 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { LucideCheck, LucideInfo, LucideTriangleAlert, LucideX } from '@lucide/angular';
-import {
-  AcaoToast,
-  COR_DO_TIPO,
-  ESPECTRO,
-  TipoToast,
-  Toast,
-  ZONA_DO_TIPO,
-} from '../../../core/models/toast.models';
+import { ESPECTRO } from '../../../core/models/espectro';
+import { AcaoToast, COR_DO_TIPO, TipoToast, Toast, ZONA_DO_TIPO } from '../../../core/models/toast.models';
 import { ToastService } from '../../../core/services/toast.service';
 
 // igual à transição de grid-template-rows do .rolo-slot
