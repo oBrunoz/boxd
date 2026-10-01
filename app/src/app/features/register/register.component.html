@@ -17,7 +17,7 @@
       </div>
 
       <form class="space-y-5" (ngSubmit)="onSubmit()">
-        <!-- Name -->
+        <!-- Nome -->
         <div>
           <label for="name" class="block text-sm text-gray-300 mb-2">Nome</label>
           <div class="relative">
@@ -28,17 +28,25 @@
               type="text"
               id="name"
               [ngModel]="name()"
-              (ngModelChange)="name.set($event)"
+              (ngModelChange)="editar('name', $event)"
+              (blur)="campos.tocar('name')"
               name="name"
+              maxlength="80"
+              [attr.aria-invalid]="!!campos.erro('name')"
+              [attr.aria-describedby]="campos.erro('name') ? 'erro-name' : null"
+              [class.ring-1]="!!campos.erro('name')"
+              [class.ring-coral]="!!campos.erro('name')"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="Seu nome"
               autocomplete="name"
-              required
             />
           </div>
+          @if (campos.erro('name'); as erro) {
+            <p id="erro-name" class="mt-2 text-xs text-coral">{{ erro }}</p>
+          }
         </div>
 
-        <!-- Nome de usuário -->
+        <!-- Nome de usuário: no erro, a ajuda dá lugar à mensagem -->
         <div>
           <label for="username" class="block text-sm text-gray-300 mb-2">Nome de usuário</label>
           <div class="relative">
@@ -49,25 +57,27 @@
               type="text"
               id="username"
               [ngModel]="username()"
-              (ngModelChange)="username.set($event)"
+              (ngModelChange)="editar('username', $event)"
+              (blur)="campos.tocar('username')"
               name="username"
+              maxlength="20"
+              autocapitalize="none"
+              spellcheck="false"
+              aria-describedby="ajuda-username"
+              [attr.aria-invalid]="!!campos.erro('username')"
+              [class.ring-1]="!!campos.erro('username')"
+              [class.ring-coral]="!!campos.erro('username')"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="seunome"
               autocomplete="username"
-              autocapitalize="none"
-              spellcheck="false"
-              minlength="3"
-              maxlength="20"
-              aria-describedby="ajuda-username"
-              required
             />
           </div>
-          <p id="ajuda-username" class="mt-2 text-xs text-gray-500">
-            É assim que as pessoas vão te encontrar. Letras minúsculas, números e underscore.
+          <p id="ajuda-username" class="mt-2 text-xs" [class]="campos.erro('username') ? 'text-coral' : 'text-gray-500'">
+            {{ campos.erro('username') || 'É assim que as pessoas vão te encontrar. Letras minúsculas, números e _.' }}
           </p>
         </div>
 
-        <!-- Email -->
+        <!-- E-mail -->
         <div>
           <label for="email" class="block text-sm text-gray-300 mb-2">E-mail</label>
           <div class="relative">
@@ -78,17 +88,30 @@
               type="email"
               id="email"
               [ngModel]="email()"
-              (ngModelChange)="email.set($event)"
+              (ngModelChange)="editar('email', $event)"
+              (blur)="campos.tocar('email')"
               name="email"
+              maxlength="180"
+              [attr.aria-invalid]="!!campos.erro('email')"
+              [attr.aria-describedby]="campos.erro('email') ? 'erro-email' : null"
+              [class.ring-1]="!!campos.erro('email')"
+              [class.ring-coral]="!!campos.erro('email')"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="voce@email.com"
               autocomplete="email"
-              required
             />
           </div>
+          @if (campos.erro('email'); as erro) {
+            <p id="erro-email" class="mt-2 text-xs text-coral">
+              {{ erro }}
+              @if (emailJaCadastrado()) {
+                <a routerLink="/login" queryParamsHandling="preserve" class="text-white hover:text-red-500 transition duration-300">Entrar nela</a>
+              }
+            </p>
+          }
         </div>
 
-        <!-- Password -->
+        <!-- Senha -->
         <div>
           <label for="password" class="block text-sm text-gray-300 mb-2">Senha</label>
           <div class="relative">
@@ -99,12 +122,17 @@
               [type]="showPassword() ? 'text' : 'password'"
               id="password"
               [ngModel]="password()"
-              (ngModelChange)="password.set($event)"
+              (ngModelChange)="editar('password', $event)"
+              (blur)="campos.tocar('password')"
               name="password"
+              maxlength="128"
+              aria-describedby="ajuda-password"
+              [attr.aria-invalid]="!!campos.erro('password')"
+              [class.ring-1]="!!campos.erro('password')"
+              [class.ring-coral]="!!campos.erro('password')"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="••••••••"
               autocomplete="new-password"
-              required
             />
             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
               <button
@@ -120,10 +148,13 @@
               </button>
             </div>
           </div>
+          <p id="ajuda-password" class="mt-2 text-xs" [class]="campos.erro('password') ? 'text-coral' : 'text-gray-500'">
+            {{ campos.erro('password') || 'Pelo menos 8 caracteres.' }}
+          </p>
         </div>
 
-        @if (erro()) {
-          <p class="text-sm text-red-400" role="alert">{{ erro() }}</p>
+        @if (erroGeral()) {
+          <p class="text-sm text-coral" role="alert">{{ erroGeral() }}</p>
         }
 
         <button

@@ -20,7 +20,7 @@
 
       <!-- Form -->
       <form class="space-y-5" (ngSubmit)="onSubmit()">
-        <!-- Email -->
+        <!-- E-mail -->
         <div>
           <label for="email" class="block text-sm text-gray-300 mb-2">E-mail</label>
           <div class="relative">
@@ -31,21 +31,27 @@
               type="email"
               id="email"
               [ngModel]="email()"
-              (ngModelChange)="email.set($event)"
+              (ngModelChange)="editar('email', $event)"
+              (blur)="campos.tocar('email')"
               name="email"
+              maxlength="180"
+              [attr.aria-invalid]="!!campos.erro('email') || credenciaisIncorretas()"
+              [attr.aria-describedby]="campos.erro('email') ? 'erro-email' : credenciaisIncorretas() ? 'erro-credenciais' : null"
+              [class.ring-1]="!!campos.erro('email') || credenciaisIncorretas()"
+              [class.ring-coral]="!!campos.erro('email') || credenciaisIncorretas()"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="voce@email.com"
               autocomplete="email"
-              required
             />
           </div>
+          @if (campos.erro('email'); as erro) {
+            <p id="erro-email" class="mt-2 text-xs text-coral">{{ erro }}</p>
+          }
         </div>
 
-        <!-- Password -->
+        <!-- Senha -->
         <div>
-          <div class="flex justify-between items-center mb-2">
-            <label for="password" class="text-sm text-gray-300">Senha</label>
-          </div>
+          <label for="password" class="block text-sm text-gray-300 mb-2">Senha</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg lucideLock [size]="16" strokeWidth="1.75" class="text-gray-500"></svg>
@@ -54,12 +60,17 @@
               [type]="showPassword() ? 'text' : 'password'"
               id="password"
               [ngModel]="password()"
-              (ngModelChange)="password.set($event)"
+              (ngModelChange)="editar('password', $event)"
+              (blur)="campos.tocar('password')"
               name="password"
+              maxlength="128"
+              [attr.aria-invalid]="!!campos.erro('password') || credenciaisIncorretas()"
+              [attr.aria-describedby]="campos.erro('password') ? 'erro-password' : credenciaisIncorretas() ? 'erro-credenciais' : null"
+              [class.ring-1]="!!campos.erro('password') || credenciaisIncorretas()"
+              [class.ring-coral]="!!campos.erro('password') || credenciaisIncorretas()"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="••••••••"
               autocomplete="current-password"
-              required
             />
             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
               <button
@@ -75,13 +86,17 @@
               </button>
             </div>
           </div>
+          @if (campos.erro('password'); as erro) {
+            <p id="erro-password" class="mt-2 text-xs text-coral">{{ erro }}</p>
+          } @else if (credenciaisIncorretas()) {
+            <p id="erro-credenciais" class="mt-2 text-xs text-coral" role="alert">E-mail ou senha incorretos.</p>
+          }
         </div>
 
-        @if (erro()) {
-          <p class="text-sm text-red-400" role="alert">{{ erro() }}</p>
+        @if (erroGeral()) {
+          <p class="text-sm text-coral" role="alert">{{ erroGeral() }}</p>
         }
 
-        <!-- Submit Button -->
         <button
           type="submit"
           [disabled]="enviando()"

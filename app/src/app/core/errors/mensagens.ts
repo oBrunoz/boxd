@@ -24,3 +24,17 @@ export function erroMenciona(erro: unknown, campo: string): boolean {
 
   return itens.some((item) => String(item).toLowerCase().includes(campo));
 }
+
+// sem conexão, excesso de tentativas ou servidor fora: não é o dado do usuário que está errado
+export function ehFalhaDeSistema(erro: unknown): boolean {
+  const status = erro instanceof HttpErrorResponse ? erro.status : -1;
+  return status === 0 || status === 429 || status >= 500;
+}
+
+// o ValidationPipe começa cada mensagem pelo nome da propriedade ("username must be...")
+export function camposRecusados(erro: unknown): Set<string> {
+  const detalhe = erro instanceof HttpErrorResponse ? erro.error?.message : null;
+  const itens = Array.isArray(detalhe) ? detalhe : detalhe ? [String(detalhe)] : [];
+
+  return new Set(itens.map((item) => String(item).split(' ')[0]));
+}

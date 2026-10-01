@@ -1,10 +1,26 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LucideEye, LucideEyeOff, LucideLock, LucideMail, LucideUser } from '@lucide/angular';
-import { erroMenciona, mensagemDeErro } from '../../core/errors/mensagens';
+import {
+  camposRecusados,
+  ehFalhaDeSistema,
+  erroMenciona,
+  mensagemDeErro,
+} from '../../core/errors/mensagens';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
+import { Campos } from '../../core/validacao/campos';
+import {
+  validarEmail,
+  validarNome,
+  validarSenhaNova,
+  validarUsername,
+} from '../../core/validacao/conta';
+
+type Campo = 'name' | 'username' | 'email' | 'password';
 
 @Component({
   selector: 'app-register',
@@ -23,6 +39,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class RegisterComponent {
   private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly rota = inject(ActivatedRoute);
 
@@ -32,23 +49,47 @@ export class RegisterComponent {
   password = signal('');
   showPassword = signal(false);
   enviando = signal(false);
-  erro = signal('');
+  erroGeral = signal('');
+  // mostra o atalho para entrar na conta que já existe
+  emailJaCadastrado = signal(false);
+
+  readonly campos = new Campos<Campo>(() => ({
+    name: validarNome(this.name()),
+    username: validarUsername(this.username()),
+    email: validarEmail(this.email()),
+    password: validarSenhaNova(this.password()),
+  }));
 
   togglePassword(): void {
     this.showPassword.update((v) => !v);
   }
 
+  editar(campo: Campo, valor: string): void {
+    // o handle vira URL: já entra minúsculo e sem espaço, como a API guarda
+    const valores = { name: this.name, username: this.username, email: this.email, password: this.password };
+    valores[campo].set(campo === 'username' ? valor.toLowerCase().replace(/\s/g, '') : valor);
+    this.campos.editou(campo);
+    this.erroGeral.set('');
+    if (campo === 'email') this.emailJaCadastrado.set(false);
+  }
+
   onSubmit(): void {
     if (this.enviando()) return;
 
+    const invalido = this.campos.primeiroInvalido();
+    if (invalido) {
+      document.getElementById(invalido)?.focus();
+      return;
+    }
+
     this.enviando.set(true);
-    this.erro.set('');
+    this.erroGeral.set('');
 
     this.auth
       .cadastrar({
-        name: this.name(),
+        name: this.name().trim(),
         username: this.username(),
-        email: this.email(),
+        email: this.email().trim(),
         password: this.password(),
       })
       .subscribe({
@@ -58,33 +99,43 @@ export class RegisterComponent {
         },
         error: (falha) => {
           this.enviando.set(false);
-          this.erro.set(
-            mensagemDeErro(falha, {
-              409: this.jaExiste(falha),
-              400: this.dadoInvalido(falha),
-            }),
-          );
+          this.tratarFalha(falha);
         },
       });
   }
 
-  // o cadastro tem dois campos únicos: a mensagem precisa dizer qual deles
-  private jaExiste(falha: unknown): string {
-    return erroMenciona(falha, 'usuario')
-      ? 'Esse nome de usuário já está em uso. Escolha outro.'
-      : 'Esse e-mail já tem uma conta. Entre nela ou use outro endereço.';
-  }
+  private tratarFalha(falha: unknown): void {
+    if (ehFalhaDeSistema(falha)) {
+      this.toast.erro('Não criamos sua conta', { detalhe: mensagemDeErro(falha), chave: 'cadastro' });
+      return;
+    }
 
-  private dadoInvalido(falha: unknown): string {
-    const problemas = [
-      erroMenciona(falha, 'name') ? 'Informe seu nome, com pelo menos 2 letras.' : '',
-      erroMenciona(falha, 'username')
-        ? 'O nome de usuário aceita de 3 a 20 caracteres, só letras minúsculas, números e underscore.'
-        : '',
-      erroMenciona(falha, 'email') ? 'Informe um e-mail válido.' : '',
-      erroMenciona(falha, 'password') ? 'A senha precisa ter pelo menos 8 caracteres.' : '',
-    ].filter(Boolean);
+    const status = falha instanceof HttpErrorResponse ? falha.status : -1;
 
-    return problemas.length > 0 ? problemas.join(' ') : 'Revise os dados informados e tente de novo.';
+    // o cadastro tem dois campos únicos: o conflito diz qual deles
+    if (status === 409) {
+      if (erroMenciona(falha, 'usuario')) {
+        this.campos.recusar('username', 'Esse nome de usuário já está em uso.');
+      } else {
+        this.campos.recusar('email', 'Esse e-mail já tem uma conta.');
+        this.emailJaCadastrado.set(true);
+      }
+      return;
+    }
+
+    if (status === 400) {
+      const recusados = camposRecusados(falha);
+      const mensagens: Record<Campo, string> = {
+        name: 'Use de 2 a 80 caracteres.',
+        username: 'Use de 3 a 20 caracteres: letras minúsculas, números e _.',
+        email: 'Confira o e-mail, parece incompleto.',
+        password: 'Use de 8 a 128 caracteres.',
+      };
+      const campos = (Object.keys(mensagens) as Campo[]).filter((c) => recusados.has(c));
+      campos.forEach((c) => this.campos.recusar(c, mensagens[c]));
+      if (campos.length) return;
+    }
+
+    this.erroGeral.set(mensagemDeErro(falha));
   }
 }

@@ -13,6 +13,8 @@ module.exports = {
           600: '#E63946',
           700: '#C92A37',
         },
+        // erro de campo e de toast: o trecho quente do espectro, sem brigar com o vermelho de ação
+        coral: '#D85057',
       },
     },
   },
