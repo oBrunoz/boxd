@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="1000" height="600"><defs><filter id="grao" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="600" color-interpolation-filters="sRGB">
+<feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="7" stitchTiles="stitch" result="ruido"/>
+<feColorMatrix in="ruido" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.5 2.9" result="poros"/>
+<feComposite in="SourceGraphic" in2="poros" operator="in"/>
+</filter></defs><g><g filter="url(#grao)"><circle cx="0" cy="600" r="560" stroke="#45417C" stroke-width="37" fill="none"/><circle cx="0" cy="600" r="524" stroke="#2880A8" stroke-width="37" fill="none"/><circle cx="0" cy="600" r="488" stroke="#78C4C4" stroke-width="37" fill="none"/><circle cx="0" cy="600" r="452" stroke="#F0E0C5" stroke-width="37" fill="none"/><circle cx="0" cy="600" r="416" stroke="#ECA352" stroke-width="37" fill="none"/><circle cx="0" cy="600" r="380" stroke="#D85057" stroke-width="37" fill="none"/><circle cx="0" cy="600" r="344" stroke="#942548" stroke-width="37" fill="none"/></g></g></svg>
