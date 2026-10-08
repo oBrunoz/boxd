@@ -67,7 +67,6 @@
               [class.ring-1]="!!campos.erro('username')"
               [class.ring-coral]="!!campos.erro('username')"
               class="bg-[#1a1a1a] text-white placeholder-gray-500 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
-              placeholder="seunome"
               autocomplete="username"
             />
           </div>
@@ -103,9 +102,6 @@
           @if (campos.erro('email'); as erro) {
             <p id="erro-email" class="mt-2 text-xs text-coral">
               {{ erro }}
-              @if (emailJaCadastrado()) {
-                <a routerLink="/login" queryParamsHandling="preserve" class="text-white hover:text-red-500 transition duration-300">Entrar nela</a>
-              }
             </p>
           }
         </div>

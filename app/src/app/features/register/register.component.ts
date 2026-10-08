@@ -119,7 +119,7 @@ export class RegisterComponent {
       if (erroMenciona(falha, 'usuario')) {
         this.campos.recusar('username', 'Esse nome de usuário já está em uso.');
       } else {
-        this.campos.recusar('email', 'Esse e-mail já tem uma conta.');
+        this.campos.recusar('email', 'E-mail já em uso.');
         this.emailJaCadastrado.set(true);
       }
       return;
